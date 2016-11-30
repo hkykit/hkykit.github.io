@@ -1,23 +1,151 @@
-
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1024, user-scalable=yes" />
+    <meta http-equiv="x-ua-compatible" content="IE=edge" />
+    <title>Merry Christmas from Hong Kong International Airport</title>
 
-<head>
-<meta charset="UTF-8">
-<meta name="description" content="香港國際機場是世界上最繁忙的貨運樞紐，也是全球最繁忙客運機場之一。從香港國際機場出發，可於五小時內飛抵全球半數人口居住地。">
-<meta name="keywords" content="香港國際機場">
-<meta name="author" content="香港國際機場">
+    <meta property="og:locale" content="en_US"  />
+    <meta property="og:image" content="http://www.objectvalley.com/images/HK-Airport.png"/>  
+    <meta property="og:title" content="香港國際機場是世界上最繁忙的貨運樞紐，也是全球最繁忙客運機場之一。從香港國際機場出發，可於五小時內飛抵全球半數人口居住地。"/>  
+    <meta property="og:description" content="在2015年，香港國際機場的總客運量達6850萬人次，總航空貨運量共438萬公噸。機場連接全球超過190個航點，包括47個內地城市。超過100家航空公司在機場營運，每天提供約1100班航班。"/> 
 
 
-<title>香港國際機場</title>
+    <script type="text/javascript">
+    !function () {
+      window.config = {
+        videoURL: 'https://aahkvideo.blob.core.windows.net/asset-4f9f9843-26ed-4b3c-b4ff-1966b1189a07/HKIA_Christmas_v1123b_1920x1080_6750.mp4?sv=2012-02-12&sr=c&si=7709625f-2175-4b86-b4f8-46ef10cf2b4d&sig=EtIcEdP3POy32SRxrmrBtoN17Wp2boQMUizBvVog8qI%3D&st=2016-11-24T10%3A06%3A41Z&se=2116-10-31T10%3A06%3A41Z',
+        width: 848,
+        height: 480
+      };
+    }();
+    </script>
+    <style type="text/css">
+      body {
+        margin: 0;
+        background-color: #56789D;
+      }
 
-<meta property="og:locale" content="en_US"  />
-<meta property="og:image" content="http://www.objectvalley.com/images/HK-Airport.png"/>  
-<meta property="og:title" content="香港國際機場是世界上最繁忙的貨運樞紐，也是全球最繁忙客運機場之一。從香港國際機場出發，可於五小時內飛抵全球半數人口居住地。"/>  
-<meta property="og:description" content="在2015年，香港國際機場的總客運量達6 850萬人次，總航空貨運量共438萬公噸。機場連接全球超過190個航點，包括47個內地城市。超過100家航空公司在機場營運，每天提供約1100班航班。"/> 
-</head>
+      .header {
+        width: 100%;
+        background-color: white;
+        border-bottom: 5px solid #D4D8DA;
+      }
 
-<body>
-Heheaaaaaaaaaa
-</body>
+      .wrap {
+        margin: 0 auto;
+        text-align: left;
+        padding: 10px 0px;
+      }
+
+      .content {
+        width: 100%;
+        background-color: #EDF2F5;
+        border-bottom: 5px solid #D4D8DA;
+      }
+
+      @media screen and (max-width: 800px), handheld and (max-device-width: 800px) {
+        body {
+          overflow-y: scroll;
+          overflow-x: hidden;
+          width: 100%;
+        }
+
+        #logo {
+          width: 20%;
+          padding-top: 2px;
+        }
+
+        .wrap {
+          width: 100%;
+          padding: 5px 0px;
+        }
+
+        .header .content {
+          border-bottom: 1px solid #D4D8DA;
+        }
+      }
+
+      .pf-throbber-control { display: none; }
+      #video { -webkit-transform: translate(0, 0) !important; }
+    </style>
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
+  </head>
+  <body>
+    <div class="header">
+      <div class="wrap">
+        <img id="logo" alt="Hong Kong International Airport" src="images/aa_logo.jpg" />
+      </div>
+    </div>
+    <div class="content">
+      <div class="wrap" id="videoBox" style="position: relative;"></div>
+    </div>
+    <script type="text/javascript">
+      !function ($) {
+        'use strict';
+
+        var
+          userAgent = window.navigator.userAgent,
+          player;
+
+        var $video = $(
+          '<video class="pf-video" controls data-resize style="display: none;">' +
+            '<object class="pf-flash" type="application/x-shockwave-flash" width="' + window.config.width + '" height="' + window.config.height + '" data-resize>' +
+              '<param name="movie" value="swf/StrobeMediaPlayback.swf" />' +
+              '<param name="allowFullScreen" value="true" />' +
+              '<param name="allowscriptaccess" value="always" />' +
+              '<param name="wmode" value="direct" />' +
+              '<param name="flashvars" value="src=' + encodeURIComponent(window.config.videoURL) + '" />' +
+            '</object>' +
+          '</video>'
+        ).attr({
+          width: window.config.width,
+          height: window.config.height
+        });
+
+        $video.prepend(
+          $('<source type="video/mp4" />').attr('src', window.config.videoURL)
+        );
+
+        if (~userAgent.indexOf('iP')) {
+          $video
+            .css('display', 'block')
+            .attr('src', window.config.videoURL);
+        } else if (~userAgent.indexOf('Android')) {
+          $video.css('display', 'block');
+          $('.pf-flash').remove();
+        } else if (userAgent.indexOf('MSIE 6.0') < 0) {
+          $video.css('display', 'block');
+        }
+
+        $('.wrap').width(window.config.width);
+
+        $video.appendTo('#videoBox');
+      } (window.jQuery);
+
+      // Code for loading Google Analytics JS, requires jQuery
+      !function () {
+        'use strict';
+
+        (window._gaq = window._gaq || []).push(['_setAccount', 'UA-9512071-1']);
+        $.ajax({ async: true, cache: false, dataType: 'script', url: '//google-analytics.com/ga.js' });
+      } ();
+
+      // Code for tracking page view, parameter "url" is optional, you will see the tracking in console log
+      !function () {
+        function trackPage(url) {
+          url = url || document.location.href;
+          window._gaq.push(['_trackPageview', url]);
+
+          if (typeof window.console !== 'undefined' && window.console.log) {
+            window.console.log('Tracking page view ' + url);
+            $.isArray(window._gaq) && window.console.log('Google Analytics script is not loaded yet, queueing page view track.');
+          }
+        }
+
+        trackPage();
+      }();
+    </script>
+  </body>
 </html>
