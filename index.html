@@ -1,150 +1,253 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=1024, user-scalable=yes" />
-    <meta http-equiv="x-ua-compatible" content="IE=edge" />
-    <title>Merry Christmas from Hong Kong International Airport</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
 
-    <meta property="og:locale" content="en_US"  />
-    <meta property="og:image" content="http://www.objectvalley.com/images/HK-Airport.png"/>  
-    <meta property="og:title" content="香港國際機場是世界上最繁忙的貨運樞紐，也是全球最繁忙客運機場之一。從香港國際機場出發，可於五小時內飛抵全球半數人口居住地。"/>  
-    <meta property="og:description" content="在2015年，香港國際機場的總客運量達6850萬人次，總航空貨運量共438萬公噸。機場連接全球超過190個航點，包括47個內地城市。超過100家航空公司在機場營運，每天提供約1100班航班。"/> 
+    <title>Dashboard Template for Bootstrap</title>
 
+    <!-- Bootstrap core CSS -->
+    <link href="../../dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <script type="text/javascript">
-    !function () {
-      window.config = {
-        videoURL: 'https://aahkvideo.blob.core.windows.net/asset-4f9f9843-26ed-4b3c-b4ff-1966b1189a07/HKIA_Christmas_v1123b_1920x1080_6750.mp4?sv=2012-02-12&sr=c&si=7709625f-2175-4b86-b4f8-46ef10cf2b4d&sig=EtIcEdP3POy32SRxrmrBtoN17Wp2boQMUizBvVog8qI%3D&st=2016-11-24T10%3A06%3A41Z&se=2116-10-31T10%3A06%3A41Z',
-        width: 848,
-        height: 480
-      };
-    }();
-    </script>
-    <style type="text/css">
-      body {
-        margin: 0;
-        background-color: #56789D;
-      }
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="../../assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
 
-      .header {
-        width: 100%;
-        background-color: white;
-        border-bottom: 5px solid #D4D8DA;
-      }
+    <!-- Custom styles for this template -->
+    <link href="dashboard.css" rel="stylesheet">
 
-      .wrap {
-        margin: 0 auto;
-        text-align: left;
-        padding: 10px 0px;
-      }
+    <!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+    <script src="../../assets/js/ie-emulation-modes-warning.js"></script>
 
-      .content {
-        width: 100%;
-        background-color: #EDF2F5;
-        border-bottom: 5px solid #D4D8DA;
-      }
-
-      @media screen and (max-width: 800px), handheld and (max-device-width: 800px) {
-        body {
-          overflow-y: scroll;
-          overflow-x: hidden;
-          width: 100%;
-        }
-
-        #logo {
-          width: 20%;
-          padding-top: 2px;
-        }
-
-        .wrap {
-          width: 100%;
-          padding: 5px 0px;
-        }
-
-        .header .content {
-          border-bottom: 1px solid #D4D8DA;
-        }
-      }
-
-      .pf-throbber-control { display: none; }
-    </style>
-    <script src="http://code.jquery.com/jquery-1.10.2.min.js" type="text/javascript"></script>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
   </head>
+
   <body>
-    <div class="header">
-      <div class="wrap">
-        <img id="logo" alt="Hong Kong International Airport" src="images/aa_logo.jpg" />
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">Project name</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">Dashboard</a></li>
+            <li><a href="#">Settings</a></li>
+            <li><a href="#">Profile</a></li>
+            <li><a href="#">Help</a></li>
+          </ul>
+          <form class="navbar-form navbar-right">
+            <input type="text" class="form-control" placeholder="Search...">
+          </form>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
+            <li><a href="#">Reports</a></li>
+            <li><a href="#">Analytics</a></li>
+            <li><a href="#">Export</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li><a href="">Nav item</a></li>
+            <li><a href="">Nav item again</a></li>
+            <li><a href="">One more nav</a></li>
+            <li><a href="">Another nav item</a></li>
+            <li><a href="">More navigation</a></li>
+          </ul>
+          <ul class="nav nav-sidebar">
+            <li><a href="">Nav item again</a></li>
+            <li><a href="">One more nav</a></li>
+            <li><a href="">Another nav item</a></li>
+          </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+          <h1 class="page-header">Dashboard</h1>
+
+          <div class="row placeholders">
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Label</h4>
+              <span class="text-muted">Something else</span>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Label</h4>
+              <span class="text-muted">Something else</span>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Label</h4>
+              <span class="text-muted">Something else</span>
+            </div>
+            <div class="col-xs-6 col-sm-3 placeholder">
+              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
+              <h4>Label</h4>
+              <span class="text-muted">Something else</span>
+            </div>
+          </div>
+
+          <h2 class="sub-header">Section title</h2>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Header</th>
+                  <th>Header</th>
+                  <th>Header</th>
+                  <th>Header</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1,001</td>
+                  <td>Lorem</td>
+                  <td>ipsum</td>
+                  <td>dolor</td>
+                  <td>sit</td>
+                </tr>
+                <tr>
+                  <td>1,002</td>
+                  <td>amet</td>
+                  <td>consectetur</td>
+                  <td>adipiscing</td>
+                  <td>elit</td>
+                </tr>
+                <tr>
+                  <td>1,003</td>
+                  <td>Integer</td>
+                  <td>nec</td>
+                  <td>odio</td>
+                  <td>Praesent</td>
+                </tr>
+                <tr>
+                  <td>1,003</td>
+                  <td>libero</td>
+                  <td>Sed</td>
+                  <td>cursus</td>
+                  <td>ante</td>
+                </tr>
+                <tr>
+                  <td>1,004</td>
+                  <td>dapibus</td>
+                  <td>diam</td>
+                  <td>Sed</td>
+                  <td>nisi</td>
+                </tr>
+                <tr>
+                  <td>1,005</td>
+                  <td>Nulla</td>
+                  <td>quis</td>
+                  <td>sem</td>
+                  <td>at</td>
+                </tr>
+                <tr>
+                  <td>1,006</td>
+                  <td>nibh</td>
+                  <td>elementum</td>
+                  <td>imperdiet</td>
+                  <td>Duis</td>
+                </tr>
+                <tr>
+                  <td>1,007</td>
+                  <td>sagittis</td>
+                  <td>ipsum</td>
+                  <td>Praesent</td>
+                  <td>mauris</td>
+                </tr>
+                <tr>
+                  <td>1,008</td>
+                  <td>Fusce</td>
+                  <td>nec</td>
+                  <td>tellus</td>
+                  <td>sed</td>
+                </tr>
+                <tr>
+                  <td>1,009</td>
+                  <td>augue</td>
+                  <td>semper</td>
+                  <td>porta</td>
+                  <td>Mauris</td>
+                </tr>
+                <tr>
+                  <td>1,010</td>
+                  <td>massa</td>
+                  <td>Vestibulum</td>
+                  <td>lacinia</td>
+                  <td>arcu</td>
+                </tr>
+                <tr>
+                  <td>1,011</td>
+                  <td>eget</td>
+                  <td>nulla</td>
+                  <td>Class</td>
+                  <td>aptent</td>
+                </tr>
+                <tr>
+                  <td>1,012</td>
+                  <td>taciti</td>
+                  <td>sociosqu</td>
+                  <td>ad</td>
+                  <td>litora</td>
+                </tr>
+                <tr>
+                  <td>1,013</td>
+                  <td>torquent</td>
+                  <td>per</td>
+                  <td>conubia</td>
+                  <td>nostra</td>
+                </tr>
+                <tr>
+                  <td>1,014</td>
+                  <td>per</td>
+                  <td>inceptos</td>
+                  <td>himenaeos</td>
+                  <td>Curabitur</td>
+                </tr>
+                <tr>
+                  <td>1,015</td>
+                  <td>sodales</td>
+                  <td>ligula</td>
+                  <td>in</td>
+                  <td>libero</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
-    <div class="content">
-      <div class="wrap" id="videoBox" style="position: relative;"></div>
-    </div>
-    <script type="text/javascript">
-      !function ($) {
-        'use strict';
 
-        var
-          userAgent = window.navigator.userAgent,
-          player;
-
-        var $video = $(
-          '<video class="pf-video" controls data-resize style="display: none;">' +
-            '<object class="pf-flash" type="application/x-shockwave-flash" width="' + window.config.width + '" height="' + window.config.height + '" data-resize>' +
-              '<param name="movie" value="swf/StrobeMediaPlayback.swf" />' +
-              '<param name="allowFullScreen" value="true" />' +
-              '<param name="allowscriptaccess" value="always" />' +
-              '<param name="wmode" value="direct" />' +
-              '<param name="flashvars" value="src=' + encodeURIComponent(window.config.videoURL) + '" />' +
-            '</object>' +
-          '</video>'
-        ).attr({
-          width: window.config.width,
-          height: window.config.height
-        });
-
-        $video.prepend(
-          $('<source type="video/mp4" />').attr('src', window.config.videoURL)
-        );
-
-        if (~userAgent.indexOf('iP')) {
-          $video
-            .css('display', 'block')
-            .attr('src', window.config.videoURL);
-        } else if (~userAgent.indexOf('Android')) {
-          $video.css('display', 'block');
-          $('.pf-flash').remove();
-        } else if (userAgent.indexOf('MSIE 6.0') < 0) {
-          $video.css('display', 'block');
-        }
-
-        $('.wrap').width(window.config.width);
-
-        $video.appendTo('#videoBox');
-      } (window.jQuery);
-
-      // Code for loading Google Analytics JS, requires jQuery
-      !function () {
-        'use strict';
-
-        (window._gaq = window._gaq || []).push(['_setAccount', 'UA-9512071-1']);
-        $.ajax({ async: true, cache: false, dataType: 'script', url: '//google-analytics.com/ga.js' });
-      } ();
-
-      // Code for tracking page view, parameter "url" is optional, you will see the tracking in console log
-      !function () {
-        function trackPage(url) {
-          url = url || document.location.href;
-          window._gaq.push(['_trackPageview', url]);
-
-          if (typeof window.console !== 'undefined' && window.console.log) {
-            window.console.log('Tracking page view ' + url);
-            $.isArray(window._gaq) && window.console.log('Google Analytics script is not loaded yet, queueing page view track.');
-          }
-        }
-
-        trackPage();
-      }();
-    </script>
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="../../assets/js/vendor/jquery.min.js"><\/script>')</script>
+    <script src="../../dist/js/bootstrap.min.js"></script>
+    <!-- Just to make our placeholder images work. Don't actually copy the next line! -->
+    <script src="../../assets/js/vendor/holder.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="../../assets/js/ie10-viewport-bug-workaround.js"></script>
   </body>
 </html>
