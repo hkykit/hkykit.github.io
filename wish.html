@@ -25,17 +25,13 @@
         placeholder="Type your sweetest wish for Bobo here... 💚&#10;(Press Enter to send, Shift+Enter for new line)"
         rows="4"
       ></textarea>
-      <button class="send-btn" id="send-btn">Send to Bobo 💌</button>
+      <button class="send-btn" id="send-btn">Send Wish 💌</button>
     </div>
-    <p class="wish-tip">Your wish flies straight to Bobo's phone~ 🕊️</p>
+    <p class="wish-tip">Every wish makes Bobo's heart a little warmer~ 🐼💚</p>
   </div>
 </div>
 
 <script>
-  /* ── Telegram config ── update these before deploying ── */
-  const BOT_TOKEN = '8867963737:AAGm1fh4ZWh3d2Djy1Rk1uQ4JpVC-yHNQsA';
-  const CHAT_ID   = '5693906587';
-
   function addBubble(text, sent) {
     const msgs = document.getElementById('chat-msgs');
     const b = document.createElement('div');
@@ -45,16 +41,6 @@
     msgs.scrollTop = msgs.scrollHeight;
   }
 
-  async function sendToTelegram(msg) {
-    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: CHAT_ID, text: `💌 A wish from My Bobo:\n\n${msg}` })
-    });
-    return res.ok;
-  }
-
   document.addEventListener('DOMContentLoaded', () => {
     addBubble("Hey My Bobo~ 🍟✨ Welcome to Bobo's wishing corner!", false);
     setTimeout(() => addBubble("What's your sweetest wish for Bobo today? 🐼💚 She's all ears, all heart, and all yours~ 🌿", false), 800);
@@ -62,29 +48,14 @@
     const btn  = document.getElementById('send-btn');
     const area = document.getElementById('wish-input');
 
-    async function send() {
+    function send() {
       const text = area.value.trim();
       if (!text) return;
 
-      btn.disabled = true;
-      btn.textContent = 'Sending... 💨';
       addBubble(text, true);
       area.value = '';
 
-      try {
-        const ok = await sendToTelegram(text);
-        if (ok) {
-          addBubble("🕊️ Your wish is on its way to Bobo~", false);
-          setTimeout(() => addBubble("💚 Bobo just received it! She's smiling, blushing, and feeling so loved right now~ 🥰🐼✨", false), 900);
-        } else {
-          addBubble("😢 Hmm, something went wrong... Please try again, My Bobo~ 🥺💚", false);
-        }
-      } catch {
-        addBubble("🌐 Oops! The wish couldn't fly over just yet~ Check your connection and try again! 💌", false);
-      }
-
-      btn.disabled = false;
-      btn.textContent = 'Send to Bobo 💌';
+      setTimeout(() => addBubble("💚 Bobo received your wish! She's smiling and blushing right now~ 🥰🐼✨", false), 600);
     }
 
     btn.addEventListener('click', send);
