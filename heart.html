@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What's in Bobo's Heart? 💗</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="floaties" id="floaties"></div>
+
+<div class="container">
+  <a href="index.html" class="back-link">← Back to Bobo's World</a>
+
+  <h1 class="page-title">What's in Bobo's Heart? 💗</h1>
+  <p class="page-sub">These are the things that make Bobo's heart sing~ Can you promise them, My Bobo? 🌿</p>
+
+  <div class="gifts-grid">
+
+    <div class="gift-card" id="gift-0">
+      <span class="gift-ico">💗</span>
+      <p class="gift-title">Cherish Bobo's precious heart!</p>
+      <p class="gift-desc">Love every single part of Bobo, just as she is — always and forever, no matter what.</p>
+      <button class="promise-btn" onclick="promise(0)">Promise! 💚</button>
+    </div>
+
+    <div class="gift-card" id="gift-1">
+      <span class="gift-ico">🕊️</span>
+      <p class="gift-title">Let Bobo's spirit fly free!</p>
+      <p class="gift-desc">Give Bobo the space to be herself, to grow, to dream, and to choose her own wonderful path.</p>
+      <button class="promise-btn" onclick="promise(1)">Promise! 💚</button>
+    </div>
+
+    <div class="gift-card" id="gift-2">
+      <span class="gift-ico">⏰</span>
+      <p class="gift-title">Every Bobo moment is sacred!</p>
+      <p class="gift-desc">Respect Bobo's time — she'll use it to sleep, eat, nap, and be wonderfully, perfectly Bobo.</p>
+      <button class="promise-btn" onclick="promise(2)">Promise! 💚</button>
+    </div>
+
+    <div class="gift-card" id="gift-3">
+      <span class="gift-ico">✨</span>
+      <p class="gift-title">Keep Bobo's smile always bright!</p>
+      <p class="gift-desc">Do your best every single day to keep that precious Bobo smile shining and her heart full.</p>
+      <button class="promise-btn" onclick="promise(3)">Promise! 💚</button>
+    </div>
+
+    <div class="gift-card" id="gift-4">
+      <span class="gift-ico">💸</span>
+      <p class="gift-title">Bobo's financial freedom, please!</p>
+      <p class="gift-desc">Let's build a future together where money is never a worry — 財務自由 is the dream! 🌟</p>
+      <button class="promise-btn" onclick="promise(4)">Promise! 💚</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function promise(idx) {
+    const card = document.getElementById('gift-' + idx);
+    card.classList.add('promised');
+    const btn = card.querySelector('.promise-btn');
+    btn.textContent = 'Promised! 🥰';
+    btn.classList.add('done');
+
+    const sparkle = document.createElement('span');
+    sparkle.className = 'sparkle';
+    sparkle.textContent = '💚';
+    card.appendChild(sparkle);
+    setTimeout(() => sparkle.remove(), 800);
+  }
+
+  // floating bg
+  const FLOATIES = ['💗','💚','🌿','✨','🌸','💝','🍀','🌱'];
+  const el = document.getElementById('floaties');
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement('span');
+    s.className = 'floaty';
+    s.textContent = FLOATIES[Math.floor(Math.random() * FLOATIES.length)];
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.animationDuration = (12 + Math.random() * 14) + 's';
+    s.style.animationDelay = (Math.random() * 16) + 's';
+    s.style.fontSize = (.9 + Math.random() * .8) + 'rem';
+    el.appendChild(s);
+  }
+</script>
+</body>
+</html>

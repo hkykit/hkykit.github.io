@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Make a Wish to Bobo! ⭐</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="floaties" id="floaties"></div>
+
+<div class="container">
+  <a href="index.html" class="back-link">← Back to Bobo's World</a>
+
+  <h1 class="page-title">Make a Wish to Bobo! ⭐</h1>
+  <p class="page-sub">Got something sweet to say? Bobo is listening with all her heart~ 🐼💚</p>
+
+  <div class="wish-wrap">
+    <div class="chat-box">
+      <div class="chat-msgs" id="chat-msgs"></div>
+      <textarea
+        class="wish-input"
+        id="wish-input"
+        placeholder="Type your sweetest wish for Bobo here... 💚&#10;(Press Enter to send, Shift+Enter for new line)"
+        rows="4"
+      ></textarea>
+      <button class="send-btn" id="send-btn">Send to Bobo 💌</button>
+    </div>
+    <p class="wish-tip">Your wish flies straight to Bobo's phone~ 🕊️</p>
+  </div>
+</div>
+
+<script>
+  /* ── Telegram config ── update these before deploying ── */
+  const BOT_TOKEN = 'YOUR_BOT_TOKEN_HERE';
+  const CHAT_ID   = 'YOUR_CHAT_ID_HERE';
+
+  function addBubble(text, sent) {
+    const msgs = document.getElementById('chat-msgs');
+    const b = document.createElement('div');
+    b.className = 'bubble' + (sent ? ' sent' : '');
+    b.textContent = text;
+    msgs.appendChild(b);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  async function sendToTelegram(msg) {
+    const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: CHAT_ID, text: `💌 A wish from My Bobo:\n\n${msg}` })
+    });
+    return res.ok;
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    addBubble("Hey My Bobo~ 🐼 What's your wish for Bobo today? She's all ears and heart! 💚", false);
+
+    const btn  = document.getElementById('send-btn');
+    const area = document.getElementById('wish-input');
+
+    async function send() {
+      const text = area.value.trim();
+      if (!text) return;
+
+      btn.disabled = true;
+      btn.textContent = 'Sending... 💨';
+      addBubble(text, true);
+      area.value = '';
+
+      try {
+        const ok = await sendToTelegram(text);
+        addBubble(
+          ok
+            ? "Your wish has reached Bobo! She's smiling and blushing right now~ 🥰🌿"
+            : "Hmm, something went wrong. Please try again, My Bobo~ 🥺",
+          false
+        );
+      } catch {
+        addBubble("Oops! The wish couldn't fly over just yet~ Check your connection! 🌐", false);
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Send to Bobo 💌';
+    }
+
+    btn.addEventListener('click', send);
+    area.addEventListener('keydown', e => {
+      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
+    });
+  });
+
+  // floating bg
+  const FLOATIES = ['⭐','💚','🌿','✨','🌸','💫','🍀','💌'];
+  const el = document.getElementById('floaties');
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement('span');
+    s.className = 'floaty';
+    s.textContent = FLOATIES[Math.floor(Math.random() * FLOATIES.length)];
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.animationDuration = (12 + Math.random() * 14) + 's';
+    s.style.animationDelay = (Math.random() * 16) + 's';
+    s.style.fontSize = (.9 + Math.random() * .8) + 'rem';
+    el.appendChild(s);
+  }
+</script>
+</body>
+</html>

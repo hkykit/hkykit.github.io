@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz of Bobo 🧠</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="floaties" id="floaties"></div>
+
+<div class="container">
+  <a href="index.html" class="back-link">← Back to Bobo's World</a>
+
+  <h1 class="page-title">Quiz of Bobo 🧠</h1>
+  <p class="page-sub">How well do you really know your Bobo, My Bobo? Let's find out~ 💚</p>
+
+  <div class="quiz-wrap">
+
+    <!-- Progress -->
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+    <p class="progress-label" id="progress-label">Question 1 of 10</p>
+
+    <!-- Question card -->
+    <div class="q-card" id="quiz-section">
+      <p class="q-tag" id="q-tag">Question 1 🐼</p>
+      <p class="q-text" id="q-text"></p>
+      <div class="options" id="options"></div>
+      <button class="next-btn" id="next-btn" style="display:none">Next question →</button>
+    </div>
+
+    <!-- Result card -->
+    <div class="result-card" id="result-card">
+      <span class="result-emo" id="result-emo">🏆</span>
+      <p class="result-score" id="result-score">10/10</p>
+      <p class="result-msg" id="result-msg"></p>
+      <div class="result-actions">
+        <button class="rbtn" id="retry-btn">Try again 🔄</button>
+        <a href="index.html" class="rbtn outline">Back home 🐼</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="quiz.js"></script>
+<script>
+  const FLOATIES = ['🌿','💚','🐼','🍀','✨','🌱','💗','🌸'];
+  const el = document.getElementById('floaties');
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement('span');
+    s.className = 'floaty';
+    s.textContent = FLOATIES[Math.floor(Math.random() * FLOATIES.length)];
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.animationDuration = (12 + Math.random() * 14) + 's';
+    s.style.animationDelay = (Math.random() * 16) + 's';
+    s.style.fontSize = (.9 + Math.random() * .8) + 'rem';
+    el.appendChild(s);
+  }
+</script>
+</body>
+</html>
