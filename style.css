@@ -212,6 +212,17 @@ footer {
   to { opacity: 1; transform: translateX(0); }
 }
 
+.q-feedback {
+  margin-top: 1.2rem;
+  padding: .9rem 1.2rem;
+  border-radius: var(--rsm);
+  font-size: 1rem; font-weight: 800;
+  text-align: center; line-height: 1.5;
+  animation: opt-in .35s ease forwards;
+}
+.q-feedback.correct-fb { background: #d4edda; color: #155724; }
+.q-feedback.wrong-fb   { background: #fff3f5; color: #721c24; }
+
 .next-btn {
   display: block; margin: 1.6rem auto 0;
   background: var(--g700); color: #fff; border: none;

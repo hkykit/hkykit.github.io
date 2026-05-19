@@ -34,7 +34,7 @@
 <script>
   /* ── Telegram config ── update these before deploying ── */
   const BOT_TOKEN = '8867963737:AAGm1fh4ZWh3d2Djy1Rk1uQ4JpVC-yHNQsA';
-  const CHAT_ID   = 'YOUR_CHAT_ID_HERE';
+  const CHAT_ID   = '5693906587';
 
   function addBubble(text, sent) {
     const msgs = document.getElementById('chat-msgs');
@@ -56,7 +56,8 @@
   }
 
   document.addEventListener('DOMContentLoaded', () => {
-    addBubble("Hey My Bobo~ 🐼 What's your wish for Bobo today? She's all ears and heart! 💚", false);
+    addBubble("Hey My Bobo~ 🍟✨ Welcome to Bobo's wishing corner!", false);
+    setTimeout(() => addBubble("What's your sweetest wish for Bobo today? 🐼💚 She's all ears, all heart, and all yours~ 🌿", false), 800);
 
     const btn  = document.getElementById('send-btn');
     const area = document.getElementById('wish-input');
@@ -72,14 +73,14 @@
 
       try {
         const ok = await sendToTelegram(text);
-        addBubble(
-          ok
-            ? "Your wish has reached Bobo! She's smiling and blushing right now~ 🥰🌿"
-            : "Hmm, something went wrong. Please try again, My Bobo~ 🥺",
-          false
-        );
+        if (ok) {
+          addBubble("🕊️ Your wish is on its way to Bobo~", false);
+          setTimeout(() => addBubble("💚 Bobo just received it! She's smiling, blushing, and feeling so loved right now~ 🥰🐼✨", false), 900);
+        } else {
+          addBubble("😢 Hmm, something went wrong... Please try again, My Bobo~ 🥺💚", false);
+        }
       } catch {
-        addBubble("Oops! The wish couldn't fly over just yet~ Check your connection! 🌐", false);
+        addBubble("🌐 Oops! The wish couldn't fly over just yet~ Check your connection and try again! 💌", false);
       }
 
       btn.disabled = false;

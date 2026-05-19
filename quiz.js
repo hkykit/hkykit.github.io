@@ -51,6 +51,32 @@ const QUESTIONS = [
   }
 ];
 
+const CORRECT_FB = [
+  "🎉 Yes!! You really know your Bobo! 💚✨",
+  "🏆 Correct!! Bobo is so proud of you! 🐼💚",
+  "✨ Woohoo!! That's exactly right! 🥳💚",
+  "💚 Spot on!! You've been paying attention! 🌟🐼",
+  "🥰 Yesss!! You really get your Bobo! 💚🌿",
+  "🎊 Nailed it!! Bobo loves you so much! 💚😊",
+  "🌟 Amazing!! Bobo is blushing right now~ 🐼💗",
+  "💪 Brilliant!! Bobo's #1 fan right here! 🥰💚",
+  "🍀 Right!! Bobo knew you'd get that one! 💚✨",
+  "🎀 Perfect!! You make Bobo's heart so happy! 💚🐼"
+];
+
+const WRONG_FB = [
+  "💚 Oops~ Bobo's real answer is highlighted above! 🐼",
+  "🌿 Almost! Check the green answer up there~ 💚🐼",
+  "😊 Not quite! Bobo's answer is glowing green above~ 🌟",
+  "🐼 Hmm~ Look for the green one! Bobo believes in you! 💚",
+  "💗 Close! The correct answer is highlighted for you~ ✨",
+  "🌸 Oopsie! Peek at the green answer above~ 💚🍀",
+  "😄 Not this time! Bobo's real answer is up there~ 🌿💚",
+  "🥰 Study harder, My Bobo! Correct answer is above~ 💚",
+  "🐼 Bobo has been exposed~ See the green answer! 💚✨",
+  "💌 That's okay! Bobo loves you anyway~ 💚 (see above!)"
+];
+
 const RESULTS = [
   { min: 10, emo: "🏆", msg: "PERFECT SCORE!! You know Bobo inside out, My Bobo! Bobo is so incredibly proud of you! 💚🐼" },
   { min: 8,  emo: "🥰", msg: "Wow, you know Bobo so well! A few more cuddles and you'll be a certified Bobo expert! 🐼💚" },
@@ -93,6 +119,8 @@ function loadQuestion() {
     grid.appendChild(btn);
   });
 
+  document.getElementById('q-feedback').style.display = 'none';
+
   const nxt = document.getElementById('next-btn');
   nxt.style.display = 'none';
   nxt.style.opacity = '0';
@@ -109,6 +137,19 @@ function pick(btn, isCorrect) {
   });
   if (!isCorrect) btn.classList.add('wrong');
   else score++;
+
+  const fb = document.getElementById('q-feedback');
+  fb.style.display = 'block';
+  fb.style.animation = 'none';
+  void fb.offsetWidth;
+  fb.style.animation = '';
+  if (isCorrect) {
+    fb.textContent = CORRECT_FB[current % CORRECT_FB.length];
+    fb.className = 'q-feedback correct-fb';
+  } else {
+    fb.textContent = WRONG_FB[current % WRONG_FB.length];
+    fb.className = 'q-feedback wrong-fb';
+  }
 
   const nxt = document.getElementById('next-btn');
   nxt.style.display = 'block';
