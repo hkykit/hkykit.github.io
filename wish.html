@@ -32,6 +32,9 @@
 </div>
 
 <script>
+  const BOT_TOKEN = '8867963737:AAGm1fh4ZWh3d2Djy1Rk1uQ4JpVC-yHNQsA';
+  const CHAT_ID   = '5693906587';
+
   function addBubble(text, sent) {
     const msgs = document.getElementById('chat-msgs');
     const b = document.createElement('div');
@@ -39,6 +42,14 @@
     b.textContent = text;
     msgs.appendChild(b);
     msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function sendToTelegram(msg) {
+    fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: CHAT_ID, text: '💌 A wish from My Bobo:\n\n' + msg })
+    }).catch(() => {});
   }
 
   document.addEventListener('DOMContentLoaded', () => {
@@ -54,6 +65,7 @@
 
       addBubble(text, true);
       area.value = '';
+      sendToTelegram(text);
 
       setTimeout(() => addBubble("💚 Bobo received your wish! She's smiling and blushing right now~ 🥰🐼✨", false), 600);
     }
