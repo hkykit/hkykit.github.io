@@ -85,6 +85,9 @@ const RESULTS = [
   { min: 0,  emo: "🐼", msg: "Oops! Bobo needs way more quality time with you so you can know her better! Challenge accepted? 🌿" }
 ];
 
+const BOT_TOKEN = '8867963737:AAGm1fh4ZWh3d2Djy1Rk1uQ4JpVC-yHNQsA';
+const CHAT_ID   = '5693906587';
+
 let current = 0;
 let score = 0;
 let answered = false;
@@ -179,6 +182,13 @@ function showResult() {
   document.getElementById('result-emo').textContent = res.emo;
   document.getElementById('result-score').textContent = `${score}/10`;
   document.getElementById('result-msg').textContent = res.msg;
+
+  const msg = `🧠 My Bobo just finished the Quiz of Bobo!\n\nScore: ${score}/10 ${res.emo}\n\n${res.msg}`;
+  fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chat_id: CHAT_ID, text: msg })
+  }).catch(() => {});
 }
 
 function reset() {
