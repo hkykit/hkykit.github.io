@@ -37,27 +37,33 @@
       align-items: center; justify-content: center;
       gap: .3rem;
     }
-    /* Heads — gold */
+    /* WPB — golden */
     .coin-heads {
-      background: radial-gradient(circle at 38% 35%, #ffe999, #f4a614 70%);
-      border: 6px solid #e8a400;
-      box-shadow: inset 0 4px 12px rgba(255,255,255,.5), inset 0 -4px 12px rgba(0,0,0,.15);
+      background: radial-gradient(circle at 38% 35%, #fff8c0, #FFD700 70%);
+      border: 6px solid #DAA520;
+      box-shadow: inset 0 4px 14px rgba(255,255,255,.6), inset 0 -4px 14px rgba(0,0,0,.18);
     }
-    /* Tails — green */
+    /* GPS — orange */
     .coin-tails {
-      background: radial-gradient(circle at 38% 35%, #b7e4c7, #40916c 70%);
-      border: 6px solid #2d6a4f;
-      box-shadow: inset 0 4px 12px rgba(255,255,255,.4), inset 0 -4px 12px rgba(0,0,0,.15);
+      background: radial-gradient(circle at 38% 35%, #FFD080, #FF8C00 70%);
+      border: 6px solid #E07000;
+      box-shadow: inset 0 4px 14px rgba(255,255,255,.45), inset 0 -4px 14px rgba(0,0,0,.18);
       transform: rotateY(180deg);
     }
-    .coin-emoji { font-size: 3rem; line-height: 1; }
-    .coin-label {
+    .coin-name {
       font-family: 'Pacifico', cursive;
-      font-size: .78rem; letter-spacing: 2px;
-      color: rgba(0,0,0,.4);
+      font-size: 2rem; line-height: 1;
+      letter-spacing: 2px;
     }
-    .coin-heads .coin-label { color: rgba(120,70,0,.5); }
-    .coin-tails .coin-label { color: rgba(255,255,255,.6); }
+    .coin-heads .coin-name { color: #7a5200; text-shadow: 0 2px 6px rgba(255,255,255,.5); }
+    .coin-tails .coin-name { color: #7a3000; text-shadow: 0 2px 6px rgba(255,255,255,.4); }
+    .coin-label {
+      font-size: .68rem; font-weight: 800;
+      letter-spacing: 3px; text-transform: uppercase;
+      margin-top: .25rem;
+    }
+    .coin-heads .coin-label { color: rgba(120,70,0,.45); }
+    .coin-tails .coin-label { color: rgba(100,40,0,.45); }
 
     /* Flip button */
     .flip-btn {
@@ -126,7 +132,7 @@
   <a href="index.html" class="back-link">← Back to My Space</a>
 
   <h1 class="page-title">Coin Toss 🪙</h1>
-  <p class="page-sub">Heads or tails? Give it a flip and let the universe decide~ ✨</p>
+  <p class="page-sub">WPB or GPS? Give it a flip and let the universe decide~ ✨</p>
 
   <div class="coin-wrap">
 
@@ -134,12 +140,12 @@
     <div class="coin-stage">
       <div class="coin" id="coin" onclick="flip()">
         <div class="coin-face coin-heads">
-          <span class="coin-emoji">☀️</span>
-          <span class="coin-label">HEADS</span>
+          <span class="coin-name">WPB</span>
+          <span class="coin-label">Golden</span>
         </div>
         <div class="coin-face coin-tails">
-          <span class="coin-emoji">🌙</span>
-          <span class="coin-label">TAILS</span>
+          <span class="coin-name">GPS</span>
+          <span class="coin-label">Orange</span>
         </div>
       </div>
     </div>
@@ -155,12 +161,12 @@
     <!-- Tally -->
     <div class="tally">
       <div class="tally-item">
-        <div class="tally-num" id="heads-count">0</div>
-        <div class="tally-name">☀️ Heads</div>
+        <div class="tally-num" id="heads-count" style="color:#b8860b">0</div>
+        <div class="tally-name">✨ WPB</div>
       </div>
       <div class="tally-item">
-        <div class="tally-num" id="tails-count">0</div>
-        <div class="tally-name">🌙 Tails</div>
+        <div class="tally-num" id="tails-count" style="color:#e07000">0</div>
+        <div class="tally-name">🟠 GPS</div>
       </div>
     </div>
 
@@ -168,24 +174,24 @@
 </div>
 
 <script>
-  const HEADS_MSGS = [
-    "☀️ Heads! The sun says yes~",
-    "☀️ Heads! Bright side wins!",
-    "☀️ Heads! Shining through~ ✨",
-    "☀️ Heads! The universe agrees! 💚",
-    "☀️ Heads! Go for it! 🌟"
+  const WPB_MSGS = [
+    "✨ WPB it is! Golden wins this round~",
+    "🌟 WPB! The golden side shines bright!",
+    "💛 WPB! Pure gold, just like that~",
+    "✨ WPB! Gleaming and glorious!",
+    "🌟 WPB! The golden choice prevails~"
   ];
-  const TAILS_MSGS = [
-    "🌙 Tails! The moon has spoken~",
-    "🌙 Tails! Mysterious and so it is!",
-    "🌙 Tails! Night side wins~ 🌿",
-    "🌙 Tails! The stars have decided! ✨",
-    "🌙 Tails! So be it~ 💚"
+  const GPS_MSGS = [
+    "🟠 GPS it is! Orange takes the crown~",
+    "🔥 GPS! Bold and bright, orange wins!",
+    "🟠 GPS! Warm and vivid, just like that~",
+    "🔥 GPS! The orange side has spoken!",
+    "🟠 GPS! Fiery and fierce, GPS wins~"
   ];
 
   let rotation = 0;
   let flipping = false;
-  let heads = 0, tails = 0;
+  let wpb = 0, gps = 0;
 
   function flip() {
     if (flipping) return;
@@ -206,15 +212,15 @@
 
     setTimeout(() => {
       if (isHeads) {
-        heads++;
-        document.getElementById('heads-count').textContent = heads;
-        const msg = HEADS_MSGS[Math.floor(Math.random() * HEADS_MSGS.length)];
-        result.innerHTML = `<p class="result-label">Heads! ☀️</p><p class="result-sub">${msg}</p>`;
+        wpb++;
+        document.getElementById('heads-count').textContent = wpb;
+        const msg = WPB_MSGS[Math.floor(Math.random() * WPB_MSGS.length)];
+        result.innerHTML = `<p class="result-label" style="color:#b8860b">WPB! ✨</p><p class="result-sub">${msg}</p>`;
       } else {
-        tails++;
-        document.getElementById('tails-count').textContent = tails;
-        const msg = TAILS_MSGS[Math.floor(Math.random() * TAILS_MSGS.length)];
-        result.innerHTML = `<p class="result-label">Tails! 🌙</p><p class="result-sub">${msg}</p>`;
+        gps++;
+        document.getElementById('tails-count').textContent = gps;
+        const msg = GPS_MSGS[Math.floor(Math.random() * GPS_MSGS.length)];
+        result.innerHTML = `<p class="result-label" style="color:#e07000">GPS! 🟠</p><p class="result-sub">${msg}</p>`;
       }
       result.classList.add('show');
       btn.disabled = false;
