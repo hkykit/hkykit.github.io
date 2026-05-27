@@ -12,66 +12,124 @@
       text-align: center;
     }
 
-    /* 3-D stage */
+    /* ── 3-D stage ── */
     .coin-stage {
-      perspective: 700px;
+      perspective: 900px;
       display: flex;
       justify-content: center;
-      margin: 2.5rem 0 1.5rem;
+      margin: 2.5rem 0 2rem;
     }
+
     .coin {
-      width: 170px; height: 170px;
+      width: 200px; height: 200px;
       position: relative;
       transform-style: preserve-3d;
-      transition: transform 1.3s cubic-bezier(.25,.46,.45,.94);
+      transition: transform 1.5s cubic-bezier(.33,.01,.2,1);
       cursor: pointer;
-      filter: drop-shadow(0 12px 28px rgba(45,106,79,.25));
     }
-    .coin:hover { filter: drop-shadow(0 16px 36px rgba(45,106,79,.35)); }
 
+    /* ── Edge (visible mid-spin) ── */
+    .coin-edge {
+      position: absolute;
+      width: 100%; height: 100%;
+      border-radius: 50%;
+      background: conic-gradient(#aaa, #777, #ccc, #888, #bbb, #666, #aaa);
+      transform: rotateY(90deg) scaleX(.06);
+      backface-visibility: visible;
+    }
+
+    /* ── Shared face ── */
     .coin-face {
       position: absolute; inset: 0;
       border-radius: 50%;
       backface-visibility: hidden;
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
-      gap: .3rem;
+      overflow: hidden;
     }
-    /* WPB — golden */
+
+    /* inner raised ring */
+    .coin-face::before {
+      content: '';
+      position: absolute; inset: 10px;
+      border-radius: 50%;
+      border: 2px solid rgba(255,255,255,.35);
+      pointer-events: none; z-index: 2;
+    }
+
+    /* gloss overlay */
+    .coin-face::after {
+      content: '';
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at 35% 28%, rgba(255,255,255,.45) 0%, transparent 55%);
+      pointer-events: none; z-index: 3;
+    }
+
+    /* ── WPB — gold ── */
     .coin-heads {
-      background: radial-gradient(circle at 38% 35%, #fff8c0, #FFD700 70%);
-      border: 6px solid #DAA520;
-      box-shadow: inset 0 4px 14px rgba(255,255,255,.6), inset 0 -4px 14px rgba(0,0,0,.18);
+      background:
+        radial-gradient(circle at 32% 28%, rgba(255,252,200,.7) 0%, transparent 45%),
+        linear-gradient(145deg, #ffe066 0%, #d4a017 35%, #f0c040 55%, #a07000 80%, #ddb84a 100%);
+      box-shadow:
+        inset 0 0 0 7px rgba(255,220,80,.3),
+        inset 0 0 0 8px rgba(0,0,0,.15),
+        0 16px 48px rgba(180,120,0,.35),
+        0 4px 12px rgba(0,0,0,.25);
     }
-    /* GPS — orange */
+
+    /* ── GPS — orange ── */
     .coin-tails {
-      background: radial-gradient(circle at 38% 35%, #FFD080, #FF8C00 70%);
-      border: 6px solid #E07000;
-      box-shadow: inset 0 4px 14px rgba(255,255,255,.45), inset 0 -4px 14px rgba(0,0,0,.18);
+      background:
+        radial-gradient(circle at 32% 28%, rgba(255,220,140,.6) 0%, transparent 45%),
+        linear-gradient(145deg, #ffb347 0%, #e06000 35%, #ff9020 55%, #b84000 80%, #ff8030 100%);
+      box-shadow:
+        inset 0 0 0 7px rgba(255,160,60,.25),
+        inset 0 0 0 8px rgba(0,0,0,.15),
+        0 16px 48px rgba(180,80,0,.35),
+        0 4px 12px rgba(0,0,0,.25);
       transform: rotateY(180deg);
     }
-    .coin-name {
-      font-family: 'Pacifico', cursive;
-      font-size: 2.8rem; line-height: 1;
-      letter-spacing: 3px;
-    }
-    .coin-heads .coin-name { color: #6b4400; text-shadow: 0 2px 8px rgba(255,255,255,.6); }
-    .coin-tails .coin-name { color: #6b2800; text-shadow: 0 2px 8px rgba(255,255,255,.5); }
 
-    /* Flip button */
+    /* ── Coin text ── */
+    .coin-name {
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.45rem;
+      font-weight: 900;
+      letter-spacing: 8px;
+      text-transform: uppercase;
+      position: relative; z-index: 4;
+    }
+    .coin-heads .coin-name {
+      color: #5c3600;
+      text-shadow:
+        0 1px 0 rgba(255,230,100,.9),
+        0 -1px 0 rgba(0,0,0,.25),
+        0 0 12px rgba(255,200,0,.3);
+    }
+    .coin-tails .coin-name {
+      color: #3e1400;
+      text-shadow:
+        0 1px 0 rgba(255,180,80,.9),
+        0 -1px 0 rgba(0,0,0,.25),
+        0 0 12px rgba(255,120,0,.3);
+    }
+
+    /* ── Flip button ── */
     .flip-btn {
       background: var(--g700); color: #fff; border: none;
       border-radius: 50px; padding: .9rem 3rem;
       font-family: 'Nunito', sans-serif;
-      font-size: 1.1rem; font-weight: 800;
-      cursor: pointer; transition: background .2s, transform .15s;
+      font-size: 1.05rem; font-weight: 800;
+      cursor: pointer; transition: background .2s, transform .15s, box-shadow .2s;
+      box-shadow: 0 4px 16px rgba(45,106,79,.3);
       margin-bottom: 1.8rem;
     }
-    .flip-btn:hover  { background: var(--g800); transform: scale(1.05); }
+    .flip-btn:hover  { background: var(--g800); transform: scale(1.05); box-shadow: 0 8px 24px rgba(45,106,79,.4); }
     .flip-btn:active { transform: scale(.97); }
-    .flip-btn:disabled { background: var(--g300); cursor: not-allowed; transform: none; }
+    .flip-btn:disabled { background: var(--g300); cursor: not-allowed; transform: none; box-shadow: none; }
 
-    /* Result */
+    /* ── Result ── */
     .result-box {
       background: var(--white);
       border-radius: var(--radius);
@@ -81,19 +139,19 @@
       display: flex; align-items: center;
       justify-content: center; flex-direction: column;
       gap: .4rem;
-      opacity: 0; transition: opacity .4s ease;
+      opacity: 0; transition: opacity .45s ease;
     }
     .result-box.show { opacity: 1; }
     .result-label {
       font-family: 'Pacifico', cursive;
-      font-size: 1.8rem; color: var(--g800);
+      font-size: 1.8rem;
     }
     .result-sub {
-      font-size: .95rem; font-weight: 700;
+      font-size: .93rem; font-weight: 700;
       color: var(--g700); line-height: 1.5;
     }
 
-    /* Score tally */
+    /* ── Tally ── */
     .tally {
       display: flex; gap: 1.5rem;
       justify-content: center; margin-top: 2rem;
@@ -101,17 +159,16 @@
     .tally-item {
       background: var(--white);
       border-radius: var(--rsm);
-      padding: .8rem 1.4rem;
+      padding: .8rem 1.6rem;
       box-shadow: var(--shadow);
-      text-align: center;
-      min-width: 90px;
+      text-align: center; min-width: 95px;
     }
     .tally-num {
       font-family: 'Pacifico', cursive;
-      font-size: 2rem; color: var(--g700);
+      font-size: 2rem;
     }
     .tally-name {
-      font-size: .78rem; font-weight: 800;
+      font-size: .75rem; font-weight: 800;
       text-transform: uppercase; letter-spacing: 1.5px;
       color: var(--g500); margin-top: .2rem;
     }
@@ -132,6 +189,7 @@
     <!-- Coin -->
     <div class="coin-stage">
       <div class="coin" id="coin" onclick="flip()">
+        <div class="coin-edge"></div>
         <div class="coin-face coin-heads">
           <span class="coin-name">WPB</span>
         </div>
