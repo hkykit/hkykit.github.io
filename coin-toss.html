@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coin Toss 🪙</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .coin-wrap {
+      max-width: 480px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    /* 3-D stage */
+    .coin-stage {
+      perspective: 700px;
+      display: flex;
+      justify-content: center;
+      margin: 2.5rem 0 1.5rem;
+    }
+    .coin {
+      width: 170px; height: 170px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 1.3s cubic-bezier(.25,.46,.45,.94);
+      cursor: pointer;
+      filter: drop-shadow(0 12px 28px rgba(45,106,79,.25));
+    }
+    .coin:hover { filter: drop-shadow(0 16px 36px rgba(45,106,79,.35)); }
+
+    .coin-face {
+      position: absolute; inset: 0;
+      border-radius: 50%;
+      backface-visibility: hidden;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: .3rem;
+    }
+    /* Heads — gold */
+    .coin-heads {
+      background: radial-gradient(circle at 38% 35%, #ffe999, #f4a614 70%);
+      border: 6px solid #e8a400;
+      box-shadow: inset 0 4px 12px rgba(255,255,255,.5), inset 0 -4px 12px rgba(0,0,0,.15);
+    }
+    /* Tails — green */
+    .coin-tails {
+      background: radial-gradient(circle at 38% 35%, #b7e4c7, #40916c 70%);
+      border: 6px solid #2d6a4f;
+      box-shadow: inset 0 4px 12px rgba(255,255,255,.4), inset 0 -4px 12px rgba(0,0,0,.15);
+      transform: rotateY(180deg);
+    }
+    .coin-emoji { font-size: 3rem; line-height: 1; }
+    .coin-label {
+      font-family: 'Pacifico', cursive;
+      font-size: .78rem; letter-spacing: 2px;
+      color: rgba(0,0,0,.4);
+    }
+    .coin-heads .coin-label { color: rgba(120,70,0,.5); }
+    .coin-tails .coin-label { color: rgba(255,255,255,.6); }
+
+    /* Flip button */
+    .flip-btn {
+      background: var(--g700); color: #fff; border: none;
+      border-radius: 50px; padding: .9rem 3rem;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1.1rem; font-weight: 800;
+      cursor: pointer; transition: background .2s, transform .15s;
+      margin-bottom: 1.8rem;
+    }
+    .flip-btn:hover  { background: var(--g800); transform: scale(1.05); }
+    .flip-btn:active { transform: scale(.97); }
+    .flip-btn:disabled { background: var(--g300); cursor: not-allowed; transform: none; }
+
+    /* Result */
+    .result-box {
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 1.6rem 2rem;
+      box-shadow: var(--shadow);
+      min-height: 80px;
+      display: flex; align-items: center;
+      justify-content: center; flex-direction: column;
+      gap: .4rem;
+      opacity: 0; transition: opacity .4s ease;
+    }
+    .result-box.show { opacity: 1; }
+    .result-label {
+      font-family: 'Pacifico', cursive;
+      font-size: 1.8rem; color: var(--g800);
+    }
+    .result-sub {
+      font-size: .95rem; font-weight: 700;
+      color: var(--g700); line-height: 1.5;
+    }
+
+    /* Score tally */
+    .tally {
+      display: flex; gap: 1.5rem;
+      justify-content: center; margin-top: 2rem;
+    }
+    .tally-item {
+      background: var(--white);
+      border-radius: var(--rsm);
+      padding: .8rem 1.4rem;
+      box-shadow: var(--shadow);
+      text-align: center;
+      min-width: 90px;
+    }
+    .tally-num {
+      font-family: 'Pacifico', cursive;
+      font-size: 2rem; color: var(--g700);
+    }
+    .tally-name {
+      font-size: .78rem; font-weight: 800;
+      text-transform: uppercase; letter-spacing: 1.5px;
+      color: var(--g500); margin-top: .2rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="floaties" id="floaties"></div>
+
+<div class="container">
+  <a href="index.html" class="back-link">← Back to My Space</a>
+
+  <h1 class="page-title">Coin Toss 🪙</h1>
+  <p class="page-sub">Heads or tails? Give it a flip and let the universe decide~ ✨</p>
+
+  <div class="coin-wrap">
+
+    <!-- Coin -->
+    <div class="coin-stage">
+      <div class="coin" id="coin" onclick="flip()">
+        <div class="coin-face coin-heads">
+          <span class="coin-emoji">☀️</span>
+          <span class="coin-label">HEADS</span>
+        </div>
+        <div class="coin-face coin-tails">
+          <span class="coin-emoji">🌙</span>
+          <span class="coin-label">TAILS</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Button -->
+    <button class="flip-btn" id="flip-btn" onclick="flip()">Flip! 🪙</button>
+
+    <!-- Result -->
+    <div class="result-box" id="result-box">
+      <p class="result-sub">Click the coin or the button to flip~ 🌿</p>
+    </div>
+
+    <!-- Tally -->
+    <div class="tally">
+      <div class="tally-item">
+        <div class="tally-num" id="heads-count">0</div>
+        <div class="tally-name">☀️ Heads</div>
+      </div>
+      <div class="tally-item">
+        <div class="tally-num" id="tails-count">0</div>
+        <div class="tally-name">🌙 Tails</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const HEADS_MSGS = [
+    "☀️ Heads! The sun says yes~",
+    "☀️ Heads! Bright side wins!",
+    "☀️ Heads! Shining through~ ✨",
+    "☀️ Heads! The universe agrees! 💚",
+    "☀️ Heads! Go for it! 🌟"
+  ];
+  const TAILS_MSGS = [
+    "🌙 Tails! The moon has spoken~",
+    "🌙 Tails! Mysterious and so it is!",
+    "🌙 Tails! Night side wins~ 🌿",
+    "🌙 Tails! The stars have decided! ✨",
+    "🌙 Tails! So be it~ 💚"
+  ];
+
+  let rotation = 0;
+  let flipping = false;
+  let heads = 0, tails = 0;
+
+  function flip() {
+    if (flipping) return;
+    flipping = true;
+
+    const btn = document.getElementById('flip-btn');
+    const result = document.getElementById('result-box');
+    btn.disabled = true;
+    result.classList.remove('show');
+
+    const isHeads = Math.random() < 0.5;
+    const spins = 5 + Math.floor(Math.random() * 4);
+    const extra = isHeads ? 0 : 180;
+    rotation += spins * 360 + extra;
+
+    const coin = document.getElementById('coin');
+    coin.style.transform = `rotateY(${rotation}deg)`;
+
+    setTimeout(() => {
+      if (isHeads) {
+        heads++;
+        document.getElementById('heads-count').textContent = heads;
+        const msg = HEADS_MSGS[Math.floor(Math.random() * HEADS_MSGS.length)];
+        result.innerHTML = `<p class="result-label">Heads! ☀️</p><p class="result-sub">${msg}</p>`;
+      } else {
+        tails++;
+        document.getElementById('tails-count').textContent = tails;
+        const msg = TAILS_MSGS[Math.floor(Math.random() * TAILS_MSGS.length)];
+        result.innerHTML = `<p class="result-label">Tails! 🌙</p><p class="result-sub">${msg}</p>`;
+      }
+      result.classList.add('show');
+      btn.disabled = false;
+      flipping = false;
+    }, 1350);
+  }
+
+  // floating bg
+  const FLOATIES = ['🪙','✨','🌿','💫','⭐','🍀','🌸','💚'];
+  const el = document.getElementById('floaties');
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement('span');
+    s.className = 'floaty';
+    s.textContent = FLOATIES[Math.floor(Math.random() * FLOATIES.length)];
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.animationDuration = (12 + Math.random() * 14) + 's';
+    s.style.animationDelay = (Math.random() * 16) + 's';
+    s.style.fontSize = (.9 + Math.random() * .8) + 'rem';
+    el.appendChild(s);
+  }
+</script>
+</body>
+</html>
