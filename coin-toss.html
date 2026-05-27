@@ -52,18 +52,11 @@
     }
     .coin-name {
       font-family: 'Pacifico', cursive;
-      font-size: 2rem; line-height: 1;
-      letter-spacing: 2px;
+      font-size: 2.8rem; line-height: 1;
+      letter-spacing: 3px;
     }
-    .coin-heads .coin-name { color: #7a5200; text-shadow: 0 2px 6px rgba(255,255,255,.5); }
-    .coin-tails .coin-name { color: #7a3000; text-shadow: 0 2px 6px rgba(255,255,255,.4); }
-    .coin-label {
-      font-size: .68rem; font-weight: 800;
-      letter-spacing: 3px; text-transform: uppercase;
-      margin-top: .25rem;
-    }
-    .coin-heads .coin-label { color: rgba(120,70,0,.45); }
-    .coin-tails .coin-label { color: rgba(100,40,0,.45); }
+    .coin-heads .coin-name { color: #6b4400; text-shadow: 0 2px 8px rgba(255,255,255,.6); }
+    .coin-tails .coin-name { color: #6b2800; text-shadow: 0 2px 8px rgba(255,255,255,.5); }
 
     /* Flip button */
     .flip-btn {
@@ -141,11 +134,9 @@
       <div class="coin" id="coin" onclick="flip()">
         <div class="coin-face coin-heads">
           <span class="coin-name">WPB</span>
-          <span class="coin-label">Golden</span>
         </div>
         <div class="coin-face coin-tails">
           <span class="coin-name">GPS</span>
-          <span class="coin-label">Orange</span>
         </div>
       </div>
     </div>
