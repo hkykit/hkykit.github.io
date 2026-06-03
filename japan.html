@@ -245,6 +245,9 @@
   <button class="tab-btn" onclick="showTab('spots')">
     <span class="tab-icon">🗺️</span>景點
   </button>
+  <button class="tab-btn" onclick="showTab('reminders')">
+    <span class="tab-icon">⏰</span>提醒
+  </button>
 </nav>
 
 <!-- ═══════════════════════ ITINERARY ═══════════════════════ -->
@@ -1658,7 +1661,230 @@
 
 </div>
 
+<!-- ═══════════════════════ REMINDERS PAGE ═══════════════════════ -->
+<div id="reminders" class="page">
+
+  <!-- WhatsApp Settings -->
+  <div class="section-title">📱 WhatsApp 提醒設定</div>
+  <div class="wa-setup-card">
+    <div class="wa-setup-steps">
+      <div class="wa-step"><span class="wa-step-num">1</span>WhatsApp 加 <strong>+34 644 60 47 47</strong> (CallMeBot) 為聯絡人</div>
+      <div class="wa-step"><span class="wa-step-num">2</span>發送訊息：<code>I allow callmebot to send me messages</code></div>
+      <div class="wa-step"><span class="wa-step-num">3</span>收到 API Key 後填入下方</div>
+    </div>
+    <div class="wa-fields">
+      <div class="wa-field-row">
+        <label>手機號碼 (帶國碼，不含 +)</label>
+        <input type="text" id="wa-phone" placeholder="85298765432" class="wa-input" />
+      </div>
+      <div class="wa-field-row">
+        <label>CallMeBot API Key</label>
+        <input type="text" id="wa-apikey" placeholder="1234567" class="wa-input" />
+      </div>
+      <div class="wa-btn-row">
+        <button class="wa-save-btn" onclick="saveWASettings()">💾 儲存設定</button>
+        <button class="wa-test-btn" onclick="testWA()">📨 測試發送</button>
+      </div>
+      <div id="wa-status" class="wa-status"></div>
+    </div>
+  </div>
+
+  <!-- Reminders List -->
+  <div class="section-title" style="margin-top:24px;">📋 所有提醒 <span id="reminder-count" class="reminder-count-badge">0</span></div>
+  <div id="reminder-list" class="reminder-list">
+    <div class="reminder-empty">尚未設定任何提醒<br><small>點擊右下角 ＋ 按鈕新增</small></div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════ FLOATING ACTION BUTTON ═══════════════════════ -->
+<div id="fab" class="fab" title="新增提醒">＋</div>
+
+<!-- ═══════════════════════ REMINDER MODAL ═══════════════════════ -->
+<div id="reminder-modal" class="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span id="modal-title">⏰ 新增提醒</span>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>📝 提醒內容</label>
+        <textarea id="r-note" rows="3" placeholder="例：訂酒店、帶護照、確認航班..."></textarea>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>📅 提醒時間</label>
+          <input type="datetime-local" id="r-datetime" />
+        </div>
+        <div class="form-group">
+          <label>🔁 重複</label>
+          <select id="r-repeat">
+            <option value="none">不重複</option>
+            <option value="daily">每天</option>
+            <option value="weekly">每週</option>
+            <option value="monthly">每月</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="toggle-label">
+          <input type="checkbox" id="r-whatsapp" checked />
+          <span class="toggle-text">📱 同時發送 WhatsApp 提醒</span>
+        </label>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">取消</button>
+      <button class="btn-save" onclick="saveReminder()">儲存提醒</button>
+    </div>
+  </div>
+</div>
+
+<!-- Notification permission banner -->
+<div id="notif-banner" class="notif-banner" style="display:none">
+  🔔 開啟瀏覽器通知，讓提醒在背景運作
+  <button onclick="requestNotifPermission()">開啟通知</button>
+  <button onclick="document.getElementById('notif-banner').style.display='none'">✕</button>
+</div>
+
+<style>
+/* ── REMINDERS PAGE ── */
+.wa-setup-card {
+  background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 18px; margin-bottom: 8px;
+}
+.wa-setup-steps { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.wa-step { display: flex; align-items: flex-start; gap: 10px; font-size: 0.85rem; color: #444; line-height: 1.5; }
+.wa-step-num {
+  background: #25D366; color: white; border-radius: 50%;
+  width: 22px; height: 22px; display: flex; align-items: center; justify-content: center;
+  font-size: 0.72rem; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+}
+.wa-step code { background: #f0f0f0; padding: 1px 6px; border-radius: 4px; font-size: 0.8rem; }
+.wa-fields { border-top: 1px solid #eee; padding-top: 14px; }
+.wa-field-row { margin-bottom: 12px; }
+.wa-field-row label { display: block; font-size: 0.78rem; color: #666; margin-bottom: 4px; font-weight: 600; }
+.wa-input {
+  width: 100%; padding: 9px 12px; border: 1px solid #ddd; border-radius: 8px;
+  font-size: 0.88rem; outline: none; transition: border 0.2s;
+}
+.wa-input:focus { border-color: #25D366; }
+.wa-btn-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.wa-save-btn, .wa-test-btn {
+  padding: 8px 18px; border-radius: 8px; border: none; cursor: pointer;
+  font-size: 0.82rem; font-weight: 600;
+}
+.wa-save-btn { background: #25D366; color: white; }
+.wa-save-btn:hover { background: #1da851; }
+.wa-test-btn { background: #e3f2fd; color: #1565c0; }
+.wa-test-btn:hover { background: #bbdefb; }
+.wa-status { font-size: 0.78rem; margin-top: 8px; min-height: 18px; }
+.reminder-count-badge {
+  background: #c0607a; color: white; border-radius: 12px;
+  padding: 1px 8px; font-size: 0.72rem; font-weight: 700;
+}
+.reminder-list { display: flex; flex-direction: column; gap: 10px; }
+.reminder-empty { text-align: center; color: #aaa; padding: 40px 20px; font-size: 0.9rem; line-height: 2; }
+.reminder-item {
+  background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start;
+  border-left: 4px solid #c0607a;
+}
+.reminder-item.done { border-left-color: #ccc; opacity: 0.6; }
+.reminder-item.overdue { border-left-color: #e57373; }
+.reminder-icon { font-size: 1.4rem; flex-shrink: 0; }
+.reminder-content { flex: 1; }
+.reminder-note { font-size: 0.9rem; font-weight: 600; color: #2c2c2c; margin-bottom: 4px; }
+.reminder-time { font-size: 0.75rem; color: #888; }
+.reminder-repeat { font-size: 0.7rem; background: #f3e5f5; color: #7b1fa2; padding: 2px 7px; border-radius: 10px; margin-left: 6px; }
+.reminder-wa { font-size: 0.7rem; background: #e8f5e9; color: #2e7d32; padding: 2px 7px; border-radius: 10px; margin-left: 4px; }
+.reminder-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.r-btn {
+  border: none; border-radius: 6px; padding: 5px 10px; cursor: pointer;
+  font-size: 0.75rem; font-weight: 600;
+}
+.r-btn-edit { background: #e3f2fd; color: #1565c0; }
+.r-btn-delete { background: #fce4ec; color: #c62828; }
+
+/* ── FAB ── */
+.fab {
+  position: fixed; right: 20px; bottom: 24px;
+  width: 54px; height: 54px;
+  background: linear-gradient(135deg, #c0607a, #e8a0b0);
+  color: white; border-radius: 50%; font-size: 1.8rem; line-height: 54px; text-align: center;
+  box-shadow: 0 4px 16px rgba(192,96,122,0.45);
+  cursor: pointer; z-index: 999; user-select: none;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.fab:hover { transform: scale(1.1); box-shadow: 0 6px 20px rgba(192,96,122,0.55); }
+.fab.dragging { transition: none; opacity: 0.85; }
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45); z-index: 1000;
+  align-items: center; justify-content: center; padding: 16px;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: white; border-radius: 16px; width: 100%; max-width: 440px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.2); overflow: hidden;
+  animation: slideUp 0.2s ease;
+}
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.modal-header {
+  background: linear-gradient(90deg, #c0607a, #e8a0b0);
+  color: white; padding: 16px 18px;
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 1rem; font-weight: 700;
+}
+.modal-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 28px; height: 28px; border-radius: 50%; cursor: pointer; font-size: 0.9rem; }
+.modal-body { padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+.form-group { display: flex; flex-direction: column; gap: 5px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-group label { font-size: 0.78rem; font-weight: 600; color: #555; }
+.form-group textarea,
+.form-group input[type="datetime-local"],
+.form-group select {
+  padding: 9px 11px; border: 1px solid #ddd; border-radius: 8px;
+  font-size: 0.87rem; outline: none; resize: none; font-family: inherit;
+  transition: border 0.2s;
+}
+.form-group textarea:focus,
+.form-group input:focus,
+.form-group select:focus { border-color: #c0607a; }
+.toggle-label { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.toggle-label input[type="checkbox"] { width: 16px; height: 16px; accent-color: #25D366; cursor: pointer; }
+.toggle-text { font-size: 0.85rem; color: #444; }
+.modal-footer {
+  padding: 12px 18px 16px; display: flex; gap: 10px; justify-content: flex-end;
+  border-top: 1px solid #f0f0f0;
+}
+.btn-cancel { background: #f5f5f5; color: #666; border: none; padding: 9px 18px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+.btn-save { background: #c0607a; color: white; border: none; padding: 9px 20px; border-radius: 8px; cursor: pointer; font-size: 0.85rem; font-weight: 600; }
+.btn-save:hover { background: #a84f68; }
+
+/* ── NOTIFICATION BANNER ── */
+.notif-banner {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: #333; color: white; padding: 10px 16px;
+  display: flex; align-items: center; gap: 12px; font-size: 0.82rem; z-index: 998;
+  flex-wrap: wrap;
+}
+.notif-banner button {
+  background: #25D366; color: white; border: none; padding: 5px 12px;
+  border-radius: 6px; cursor: pointer; font-size: 0.78rem;
+}
+.notif-banner button:last-child { background: transparent; border: 1px solid rgba(255,255,255,0.3); }
+
+@media (max-width: 600px) {
+  .form-row { grid-template-columns: 1fr; }
+}
+</style>
+
 <script>
+  /* ── TAB NAV ── */
   function showTab(tab) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -1666,6 +1892,268 @@
     event.currentTarget.classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  /* ── STORAGE HELPERS ── */
+  function getReminders() {
+    try { return JSON.parse(localStorage.getItem('jp_reminders') || '[]'); } catch { return []; }
+  }
+  function saveReminders(arr) {
+    localStorage.setItem('jp_reminders', JSON.stringify(arr));
+  }
+  function getWASettings() {
+    return {
+      phone: localStorage.getItem('jp_wa_phone') || '',
+      apikey: localStorage.getItem('jp_wa_apikey') || ''
+    };
+  }
+
+  /* ── WHATSAPP ── */
+  function saveWASettings() {
+    const phone = document.getElementById('wa-phone').value.trim();
+    const apikey = document.getElementById('wa-apikey').value.trim();
+    localStorage.setItem('jp_wa_phone', phone);
+    localStorage.setItem('jp_wa_apikey', apikey);
+    setWAStatus('✅ 設定已儲存', 'green');
+  }
+
+  function setWAStatus(msg, color) {
+    const el = document.getElementById('wa-status');
+    if (!el) return;
+    el.textContent = msg;
+    el.style.color = color === 'green' ? '#2e7d32' : color === 'red' ? '#c62828' : '#555';
+    setTimeout(() => { el.textContent = ''; }, 4000);
+  }
+
+  async function sendWA(text) {
+    const { phone, apikey } = getWASettings();
+    if (!phone || !apikey) return false;
+    const url = `https://api.callmebot.com/whatsapp.php?phone=${encodeURIComponent(phone)}&text=${encodeURIComponent(text)}&apikey=${encodeURIComponent(apikey)}`;
+    try {
+      await fetch(url, { mode: 'no-cors' });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  async function testWA() {
+    const { phone, apikey } = getWASettings();
+    if (!phone || !apikey) { setWAStatus('⚠️ 請先填入手機號碼和 API Key', 'red'); return; }
+    setWAStatus('📨 發送中…', '#555');
+    const ok = await sendWA('🗾 四國之旅提醒測試 — 設定成功！');
+    setWAStatus(ok ? '✅ 測試訊息已發送，請查看 WhatsApp' : '⚠️ 發送失敗，請檢查號碼和 API Key', ok ? 'green' : 'red');
+  }
+
+  /* ── MODAL ── */
+  let editingId = null;
+
+  function openModal(reminder) {
+    editingId = reminder ? reminder.id : null;
+    document.getElementById('modal-title').textContent = reminder ? '✏️ 編輯提醒' : '⏰ 新增提醒';
+
+    const now = new Date();
+    now.setMinutes(now.getMinutes() - now.getTimezoneOffset());
+    const defaultDt = now.toISOString().slice(0, 16);
+
+    document.getElementById('r-note').value = reminder ? reminder.note : '';
+    document.getElementById('r-datetime').value = reminder ? reminder.datetime : defaultDt;
+    document.getElementById('r-repeat').value = reminder ? reminder.repeat : 'none';
+    document.getElementById('r-whatsapp').checked = reminder ? reminder.whatsapp : true;
+
+    document.getElementById('reminder-modal').classList.add('open');
+    document.getElementById('r-note').focus();
+  }
+
+  function closeModal() {
+    document.getElementById('reminder-modal').classList.remove('open');
+    editingId = null;
+  }
+
+  function closeModalOutside(e) {
+    if (e.target === document.getElementById('reminder-modal')) closeModal();
+  }
+
+  function saveReminder() {
+    const note = document.getElementById('r-note').value.trim();
+    const datetime = document.getElementById('r-datetime').value;
+    const repeat = document.getElementById('r-repeat').value;
+    const whatsapp = document.getElementById('r-whatsapp').checked;
+
+    if (!note) { document.getElementById('r-note').focus(); return; }
+    if (!datetime) { document.getElementById('r-datetime').focus(); return; }
+
+    const reminders = getReminders();
+    if (editingId) {
+      const idx = reminders.findIndex(r => r.id === editingId);
+      if (idx !== -1) {
+        reminders[idx] = { ...reminders[idx], note, datetime, repeat, whatsapp, sent: false };
+      }
+    } else {
+      reminders.push({ id: Date.now().toString(), note, datetime, repeat, whatsapp, sent: false, createdAt: new Date().toISOString() });
+    }
+    saveReminders(reminders);
+    closeModal();
+    renderReminders();
+  }
+
+  /* ── RENDER ── */
+  const REPEAT_LABELS = { none: '', daily: '每天', weekly: '每週', monthly: '每月' };
+
+  function renderReminders() {
+    const reminders = getReminders();
+    const list = document.getElementById('reminder-list');
+    const badge = document.getElementById('reminder-count');
+    if (badge) badge.textContent = reminders.length;
+
+    if (!reminders.length) {
+      list.innerHTML = '<div class="reminder-empty">尚未設定任何提醒<br><small>點擊右下角 ＋ 按鈕新增</small></div>';
+      return;
+    }
+
+    const now = new Date();
+    const sorted = [...reminders].sort((a, b) => new Date(a.datetime) - new Date(b.datetime));
+
+    list.innerHTML = sorted.map(r => {
+      const dt = new Date(r.datetime);
+      const isOverdue = dt < now && !r.sent;
+      const isSent = r.sent;
+      const cls = isSent ? 'done' : isOverdue ? 'overdue' : '';
+      const icon = isSent ? '✅' : isOverdue ? '🔴' : '⏰';
+      const dtStr = dt.toLocaleString('zh-HK', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      const repeatBadge = r.repeat !== 'none' ? `<span class="reminder-repeat">🔁 ${REPEAT_LABELS[r.repeat]}</span>` : '';
+      const waBadge = r.whatsapp ? `<span class="reminder-wa">📱 WhatsApp</span>` : '';
+      return `<div class="reminder-item ${cls}" data-id="${r.id}">
+        <div class="reminder-icon">${icon}</div>
+        <div class="reminder-content">
+          <div class="reminder-note">${escHtml(r.note)}</div>
+          <div class="reminder-time">${dtStr}${repeatBadge}${waBadge}</div>
+        </div>
+        <div class="reminder-actions">
+          <button class="r-btn r-btn-edit" onclick="editReminder('${r.id}')">✏️</button>
+          <button class="r-btn r-btn-delete" onclick="deleteReminder('${r.id}')">🗑️</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function escHtml(s) { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  function editReminder(id) {
+    const r = getReminders().find(r => r.id === id);
+    if (r) openModal(r);
+    showTab('reminders');
+  }
+
+  function deleteReminder(id) {
+    if (!confirm('確定刪除此提醒？')) return;
+    saveReminders(getReminders().filter(r => r.id !== id));
+    renderReminders();
+  }
+
+  /* ── REMINDER CHECKER ── */
+  async function checkReminders() {
+    const now = new Date();
+    const reminders = getReminders();
+    let changed = false;
+
+    for (const r of reminders) {
+      if (r.sent && r.repeat === 'none') continue;
+      const dt = new Date(r.datetime);
+      if (dt <= now && !r.sent) {
+        // Fire notification
+        if (Notification.permission === 'granted') {
+          new Notification('🗾 四國之旅提醒', { body: r.note, icon: '' });
+        }
+        // Send WhatsApp
+        if (r.whatsapp) {
+          const dtStr = dt.toLocaleString('zh-HK');
+          sendWA(`🗾 四國之旅提醒\n⏰ ${dtStr}\n📝 ${r.note}`);
+        }
+        // Handle repeat
+        if (r.repeat === 'none') {
+          r.sent = true;
+        } else {
+          const next = new Date(dt);
+          if (r.repeat === 'daily') next.setDate(next.getDate() + 1);
+          else if (r.repeat === 'weekly') next.setDate(next.getDate() + 7);
+          else if (r.repeat === 'monthly') next.setMonth(next.getMonth() + 1);
+          r.datetime = next.toISOString().slice(0, 16);
+          r.sent = false;
+        }
+        changed = true;
+      }
+    }
+    if (changed) { saveReminders(reminders); renderReminders(); }
+  }
+
+  /* ── NOTIFICATIONS ── */
+  function requestNotifPermission() {
+    Notification.requestPermission().then(p => {
+      if (p === 'granted') document.getElementById('notif-banner').style.display = 'none';
+    });
+  }
+
+  /* ── DRAGGABLE FAB ── */
+  (function() {
+    const fab = document.getElementById('fab');
+    let dragging = false, startX, startY, origX, origY;
+
+    function onStart(e) {
+      dragging = true;
+      fab.classList.add('dragging');
+      const touch = e.touches ? e.touches[0] : e;
+      startX = touch.clientX; startY = touch.clientY;
+      origX = fab.offsetLeft; origY = fab.offsetTop;
+      e.preventDefault();
+    }
+    function onMove(e) {
+      if (!dragging) return;
+      const touch = e.touches ? e.touches[0] : e;
+      const dx = touch.clientX - startX, dy = touch.clientY - startY;
+      const nx = Math.max(0, Math.min(window.innerWidth - 54, origX + dx));
+      const ny = Math.max(0, Math.min(window.innerHeight - 54, origY + dy));
+      fab.style.left = nx + 'px'; fab.style.top = ny + 'px';
+      fab.style.right = 'auto'; fab.style.bottom = 'auto';
+      e.preventDefault();
+    }
+    function onEnd(e) {
+      if (!dragging) return;
+      dragging = false;
+      fab.classList.remove('dragging');
+    }
+
+    fab.addEventListener('mousedown', onStart);
+    fab.addEventListener('touchstart', onStart, { passive: false });
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('mouseup', onEnd);
+    document.addEventListener('touchend', onEnd);
+
+    // Click to open modal (only if not dragged)
+    let moved = false;
+    fab.addEventListener('mousedown', () => moved = false);
+    document.addEventListener('mousemove', () => { if (dragging) moved = true; });
+    fab.addEventListener('click', () => { if (!moved) openModal(null); });
+  })();
+
+  /* ── INIT ── */
+  window.addEventListener('DOMContentLoaded', () => {
+    // Load WA settings
+    const { phone, apikey } = getWASettings();
+    if (phone) document.getElementById('wa-phone').value = phone;
+    if (apikey) document.getElementById('wa-apikey').value = apikey;
+
+    renderReminders();
+
+    // Notification permission prompt
+    if ('Notification' in window && Notification.permission === 'default') {
+      setTimeout(() => { document.getElementById('notif-banner').style.display = 'flex'; }, 2000);
+    }
+
+    // Check reminders every 30 seconds
+    checkReminders();
+    setInterval(checkReminders, 30000);
+  });
 </script>
 
 </body>
