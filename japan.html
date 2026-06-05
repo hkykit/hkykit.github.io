@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>2026 日本四國之旅 🗾</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#c0607a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="四國之旅">
+<link rel="apple-touch-icon" href="./icon.svg">
 <style>
   :root {
     --sakura: #e8a0b0;
@@ -212,6 +218,111 @@
   .spot-link:hover { text-decoration: underline; }
   .spot-warning { font-size: 0.72rem; color: #e57373; }
 
+  /* INSTALL BANNER */
+  .install-banner {
+    display: none;
+    background: linear-gradient(90deg, #c0607a, #e8a0b0);
+    color: white; padding: 10px 16px;
+    align-items: center; gap: 10px; justify-content: space-between;
+  }
+  .install-banner.show { display: flex; }
+  .install-banner span { font-size: 0.85rem; flex: 1; }
+  .install-btn {
+    background: white; color: #c0607a; border: none;
+    border-radius: 20px; padding: 6px 14px;
+    font-size: 0.8rem; font-weight: 700; cursor: pointer; white-space: nowrap;
+  }
+  .install-dismiss { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; padding: 0 4px; }
+
+  /* REMINDERS PAGE */
+  .reminders-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .reminders-header h2 { font-size: 1.1rem; font-weight: 700; color: var(--sakura-dark); }
+  .reminder-card {
+    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 14px 16px; margin-bottom: 10px;
+    border-left: 4px solid var(--sakura-dark);
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 10px;
+  }
+  .reminder-card.sent { border-left-color: #aaa; opacity: 0.65; }
+  .reminder-info { flex: 1; }
+  .reminder-note { font-size: 0.9rem; font-weight: 600; color: var(--ink); margin-bottom: 4px; }
+  .reminder-time { font-size: 0.75rem; color: var(--soft); }
+  .reminder-repeat { font-size: 0.7rem; background: var(--sakura-light); color: var(--sakura-dark); padding: 2px 8px; border-radius: 10px; display: inline-block; margin-top: 4px; }
+  .reminder-actions { display: flex; gap: 6px; flex-shrink: 0; }
+  .reminder-actions button { background: none; border: 1px solid var(--border); border-radius: 8px; padding: 4px 10px; cursor: pointer; font-size: 0.75rem; }
+  .reminder-actions .btn-edit { color: var(--blue); border-color: var(--blue); }
+  .reminder-actions .btn-del { color: #e57373; border-color: #e57373; }
+  .empty-state { text-align: center; color: var(--soft); padding: 40px 20px; font-size: 0.9rem; }
+
+  /* PUSH SETTINGS */
+  .settings-card {
+    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 16px; margin-top: 24px;
+  }
+  .settings-title { font-size: 0.95rem; font-weight: 700; color: var(--ink); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+  .settings-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+  .settings-row label { font-size: 0.8rem; color: var(--soft); min-width: 90px; }
+  .settings-row input { flex: 1; border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; font-size: 0.82rem; }
+  .settings-status { font-size: 0.75rem; padding: 4px 10px; border-radius: 8px; }
+  .status-ok { background: #e8f5e9; color: #2e7d32; }
+  .status-warn { background: #fff3e0; color: #e65100; }
+  .settings-steps { font-size: 0.75rem; color: var(--soft); line-height: 1.8; margin-top: 10px; padding: 10px; background: var(--sakura-light); border-radius: 8px; }
+  .settings-steps a { color: var(--sakura-dark); }
+
+  /* FAB */
+  .fab {
+    position: fixed; right: 24px; bottom: 32px;
+    width: 56px; height: 56px; border-radius: 50%;
+    background: linear-gradient(135deg, #c0607a, #e8a0b0);
+    color: white; border: none; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(192,96,122,0.5);
+    font-size: 1.5rem; display: flex; align-items: center; justify-content: center;
+    z-index: 200; touch-action: none; user-select: none;
+    transition: box-shadow 0.2s, transform 0.1s;
+  }
+  .fab:hover { box-shadow: 0 6px 20px rgba(192,96,122,0.6); transform: scale(1.05); }
+  .fab:active { transform: scale(0.97); }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5); z-index: 300;
+    align-items: center; justify-content: center; padding: 16px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: white; border-radius: 16px;
+    padding: 24px; width: 100%; max-width: 420px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+  }
+  .modal h3 { font-size: 1rem; font-weight: 700; color: var(--sakura-dark); margin-bottom: 16px; }
+  .form-group { margin-bottom: 14px; }
+  .form-group label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--soft); margin-bottom: 4px; }
+  .form-group input, .form-group select, .form-group textarea {
+    width: 100%; border: 1px solid var(--border); border-radius: 8px;
+    padding: 9px 12px; font-size: 0.88rem; font-family: inherit;
+    outline: none; transition: border-color 0.2s;
+  }
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--sakura-dark); }
+  .form-group textarea { resize: vertical; min-height: 70px; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 18px; justify-content: flex-end; }
+  .btn-primary {
+    background: var(--sakura-dark); color: white; border: none;
+    border-radius: 8px; padding: 9px 20px; font-size: 0.88rem; font-weight: 600; cursor: pointer;
+  }
+  .btn-secondary {
+    background: none; color: var(--soft); border: 1px solid var(--border);
+    border-radius: 8px; padding: 9px 16px; font-size: 0.88rem; cursor: pointer;
+  }
+
+  /* NOTIF BANNER */
+  .notif-banner {
+    display: none; position: fixed; bottom: 96px; left: 50%; transform: translateX(-50%);
+    background: #333; color: white; border-radius: 10px;
+    padding: 10px 18px; font-size: 0.82rem; z-index: 250;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3); white-space: nowrap;
+  }
+
   /* RESPONSIVE */
   @media (max-width: 600px) {
     .site-header h1 { font-size: 1.4rem; }
@@ -232,6 +343,13 @@
   </div>
 </header>
 
+<!-- INSTALL BANNER -->
+<div id="installBanner" class="install-banner">
+  <span>📱 安裝為 App，離線也能用！</span>
+  <button class="install-btn" onclick="doInstall()">安裝</button>
+  <button class="install-dismiss" onclick="hideInstall()">✕</button>
+</div>
+
 <nav class="tab-nav">
   <button class="tab-btn active" onclick="showTab('itinerary')">
     <span class="tab-icon">📅</span>行程
@@ -244,6 +362,9 @@
   </button>
   <button class="tab-btn" onclick="showTab('spots')">
     <span class="tab-icon">🗺️</span>景點
+  </button>
+  <button class="tab-btn" onclick="showTab('reminders')">
+    <span class="tab-icon">⏰</span>提醒
   </button>
 </nav>
 
@@ -1548,13 +1669,303 @@
 
 </div>
 
+<!-- ═══════════════════════ REMINDERS ═══════════════════════ -->
+<div id="reminders" class="page">
+  <div class="reminders-header">
+    <h2>⏰ 行程提醒</h2>
+    <button class="btn-primary" style="font-size:0.8rem;padding:7px 14px" onclick="openModal()">＋ 新增提醒</button>
+  </div>
+  <div id="remindersList"></div>
+
+  <!-- Push notification settings -->
+  <div class="settings-card">
+    <div class="settings-title">🔔 推送通知設定 (OneSignal)</div>
+    <div class="settings-row">
+      <label>App ID</label>
+      <input type="text" id="osAppId" placeholder="貼入 OneSignal App ID…" oninput="saveOSSettings()">
+      <span id="osStatus" class="settings-status status-warn">未設定</span>
+    </div>
+    <button class="btn-primary" style="font-size:0.78rem;padding:6px 14px;margin-top:4px" onclick="requestNotifPermission()">啟用瀏覽器通知</button>
+    <div class="settings-steps">
+      <strong>設定步驟：</strong><br>
+      1. 到 <a href="https://onesignal.com" target="_blank">onesignal.com</a> 免費注冊<br>
+      2. 建立 Web App → 複製 <strong>App ID</strong> 貼上方<br>
+      3. 在 GitHub Repo Settings → Secrets 加入 <code>ONESIGNAL_APP_ID</code> 及 <code>ONESIGNAL_REST_KEY</code><br>
+      4. 點擊「啟用瀏覽器通知」並允許<br>
+      5. 完成！GitHub Actions 每 5 分鐘自動發送到期提醒 🎉
+    </div>
+  </div>
+</div>
+
+<!-- FAB -->
+<button class="fab" id="fab" onclick="openModal()" title="新增提醒">⏰</button>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <h3 id="modalTitle">⏰ 新增提醒</h3>
+    <div class="form-group">
+      <label>備注 / 提醒內容</label>
+      <textarea id="mNote" placeholder="例：退房前收拾行李…" rows="3"></textarea>
+    </div>
+    <div class="form-group">
+      <label>提醒時間</label>
+      <input type="datetime-local" id="mDatetime">
+    </div>
+    <div class="form-group">
+      <label>重複</label>
+      <select id="mRepeat">
+        <option value="none">不重複</option>
+        <option value="daily">每天</option>
+        <option value="weekly">每週</option>
+        <option value="monthly">每月</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">取消</button>
+      <button class="btn-primary" onclick="saveReminder()">儲存</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFICATION BANNER -->
+<div class="notif-banner" id="notifBanner"></div>
+
 <script>
+  /* ── TAB NAVIGATION ── */
   function showTab(tab) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById(tab).classList.add('active');
     event.currentTarget.classList.add('active');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (tab === 'reminders') renderReminders();
+  }
+
+  /* ── REMINDER STORAGE ── */
+  function getReminders() {
+    try { return JSON.parse(localStorage.getItem('reminders') || '[]'); } catch { return []; }
+  }
+  function saveRemindersLocal(list) {
+    localStorage.setItem('reminders', JSON.stringify(list));
+  }
+
+  /* ── OS SETTINGS ── */
+  function getOSSettings() {
+    try { return JSON.parse(localStorage.getItem('osSettings') || '{}'); } catch { return {}; }
+  }
+  function saveOSSettings() {
+    const appId = document.getElementById('osAppId').value.trim();
+    localStorage.setItem('osSettings', JSON.stringify({ appId }));
+    setOSStatus(appId);
+    if (appId) initOneSignal(appId);
+  }
+  function setOSStatus(appId) {
+    const el = document.getElementById('osStatus');
+    if (!el) return;
+    if (appId) { el.textContent = '已設定 ✓'; el.className = 'settings-status status-ok'; }
+    else { el.textContent = '未設定'; el.className = 'settings-status status-warn'; }
+  }
+
+  /* ── ONESIGNAL ── */
+  function initOneSignal(appId) {
+    if (!appId || typeof OneSignal === 'undefined') return;
+    OneSignal.init({ appId }).catch(() => {});
+  }
+  async function syncToOneSignal(reminders) {
+    const { appId } = getOSSettings();
+    if (!appId || typeof OneSignal === 'undefined') return;
+    try {
+      const tags = {};
+      reminders.forEach(r => { tags['r_' + r.id] = JSON.stringify(r); });
+      await OneSignal.sendTags(tags);
+    } catch {}
+  }
+
+  /* ── SERVICE WORKER SCHEDULING ── */
+  function scheduleViaSW(reminders) {
+    if (!navigator.serviceWorker?.controller) return;
+    navigator.serviceWorker.controller.postMessage({ type: 'SCHEDULE', reminders });
+  }
+
+  /* ── MODAL ── */
+  let editingId = null;
+  function openModal(id) {
+    editingId = id || null;
+    const reminders = getReminders();
+    const r = id ? reminders.find(x => x.id === id) : null;
+    document.getElementById('modalTitle').textContent = id ? '✏️ 編輯提醒' : '⏰ 新增提醒';
+    document.getElementById('mNote').value = r ? r.note : '';
+    document.getElementById('mDatetime').value = r ? r.datetime : '';
+    document.getElementById('mRepeat').value = r ? r.repeat : 'none';
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+  function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); editingId = null; }
+  function closeModalOutside(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
+
+  /* ── SAVE REMINDER ── */
+  function saveReminder() {
+    const note = document.getElementById('mNote').value.trim();
+    const datetime = document.getElementById('mDatetime').value;
+    const repeat = document.getElementById('mRepeat').value;
+    if (!note || !datetime) { showBanner('請填寫備注和時間'); return; }
+
+    let reminders = getReminders();
+    if (editingId) {
+      const idx = reminders.findIndex(r => r.id === editingId);
+      if (idx >= 0) reminders[idx] = { ...reminders[idx], note, datetime, repeat, sent: false };
+    } else {
+      reminders.push({ id: Date.now().toString(), note, datetime, repeat, sent: false, createdAt: new Date().toISOString() });
+    }
+    saveRemindersLocal(reminders);
+    syncToOneSignal(reminders);
+    scheduleViaSW(reminders);
+    closeModal();
+    renderReminders();
+    showBanner('提醒已儲存 ✓');
+  }
+
+  /* ── RENDER REMINDERS ── */
+  function renderReminders() {
+    const list = document.getElementById('remindersList');
+    if (!list) return;
+    const reminders = getReminders().sort((a, b) => a.datetime.localeCompare(b.datetime));
+    if (!reminders.length) {
+      list.innerHTML = '<div class="empty-state">📭 暫無提醒<br><small>按右下角 ⏰ 新增第一個提醒</small></div>';
+      return;
+    }
+    const repeatLabel = { none: '不重複', daily: '每天', weekly: '每週', monthly: '每月' };
+    list.innerHTML = reminders.map(r => `
+      <div class="reminder-card${r.sent && r.repeat === 'none' ? ' sent' : ''}">
+        <div class="reminder-info">
+          <div class="reminder-note">${escHtml(r.note)}</div>
+          <div class="reminder-time">📅 ${r.datetime.replace('T', ' ')}</div>
+          <span class="reminder-repeat">🔁 ${repeatLabel[r.repeat] || r.repeat}</span>
+          ${r.sent && r.repeat === 'none' ? '<span style="font-size:0.7rem;color:#aaa;margin-left:8px">已發送</span>' : ''}
+        </div>
+        <div class="reminder-actions">
+          <button class="btn-edit" onclick="editReminder('${escHtml(r.id)}')">編輯</button>
+          <button class="btn-del" onclick="deleteReminder('${escHtml(r.id)}')">刪除</button>
+        </div>
+      </div>`).join('');
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+  function editReminder(id) { openModal(id); }
+  function deleteReminder(id) {
+    if (!confirm('確定刪除這個提醒？')) return;
+    let reminders = getReminders().filter(r => r.id !== id);
+    saveRemindersLocal(reminders);
+    syncToOneSignal(reminders);
+    scheduleViaSW(reminders);
+    renderReminders();
+    showBanner('已刪除 ✓');
+  }
+
+  /* ── NOTIFICATION BANNER ── */
+  function showBanner(msg) {
+    const b = document.getElementById('notifBanner');
+    b.textContent = msg; b.style.display = 'block';
+    setTimeout(() => { b.style.display = 'none'; }, 2500);
+  }
+
+  /* ── BROWSER NOTIFICATION PERMISSION ── */
+  function requestNotifPermission() {
+    if (!('Notification' in window)) { showBanner('此瀏覽器不支援通知'); return; }
+    Notification.requestPermission().then(p => {
+      showBanner(p === 'granted' ? '通知已啟用 ✓' : '通知未允許');
+    });
+  }
+
+  /* ── PWA INSTALL PROMPT ── */
+  let deferredInstall = null;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredInstall = e;
+    document.getElementById('installBanner').classList.add('show');
+  });
+  function doInstall() {
+    if (!deferredInstall) return;
+    deferredInstall.prompt();
+    deferredInstall.userChoice.then(() => { deferredInstall = null; hideInstall(); });
+  }
+  function hideInstall() { document.getElementById('installBanner').classList.remove('show'); }
+  window.addEventListener('appinstalled', hideInstall);
+
+  /* ── FAB DRAGGING ── */
+  (function() {
+    const fab = document.getElementById('fab');
+    let dragging = false, startX, startY, origRight, origBottom;
+    function startDrag(x, y) {
+      dragging = false;
+      startX = x; startY = y;
+      const rect = fab.getBoundingClientRect();
+      origRight = window.innerWidth - rect.right;
+      origBottom = window.innerHeight - rect.bottom;
+    }
+    function moveDrag(x, y) {
+      const dx = Math.abs(x - startX), dy = Math.abs(y - startY);
+      if (!dragging && (dx > 4 || dy > 4)) dragging = true;
+      if (!dragging) return;
+      const newRight = Math.max(8, Math.min(window.innerWidth - 64, origRight + (startX - x)));
+      const newBottom = Math.max(8, Math.min(window.innerHeight - 64, origBottom + (startY - y)));
+      fab.style.right = newRight + 'px';
+      fab.style.bottom = newBottom + 'px';
+      fab.style.left = 'auto'; fab.style.top = 'auto';
+    }
+    function endDrag() { if (!dragging) return; dragging = false; }
+    fab.addEventListener('mousedown', e => { startDrag(e.clientX, e.clientY); e.preventDefault(); });
+    window.addEventListener('mousemove', e => { if (startX !== undefined) moveDrag(e.clientX, e.clientY); });
+    window.addEventListener('mouseup', () => { endDrag(); startX = undefined; });
+    fab.addEventListener('touchstart', e => { startDrag(e.touches[0].clientX, e.touches[0].clientY); }, { passive: true });
+    window.addEventListener('touchmove', e => { if (startX !== undefined && dragging) { e.preventDefault(); moveDrag(e.touches[0].clientX, e.touches[0].clientY); } }, { passive: false });
+    window.addEventListener('touchend', () => { endDrag(); startX = undefined; });
+    fab.addEventListener('click', e => { if (dragging) { e.stopImmediatePropagation(); dragging = false; } });
+  })();
+
+  /* ── SERVICE WORKER REGISTRATION ── */
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('./sw.js', { scope: './' }).then(reg => {
+      console.log('SW registered', reg.scope);
+      navigator.serviceWorker.ready.then(() => scheduleViaSW(getReminders()));
+    }).catch(e => console.warn('SW error', e));
+  }
+
+  /* ── INIT ── */
+  document.addEventListener('DOMContentLoaded', () => {
+    const { appId } = getOSSettings();
+    const appIdEl = document.getElementById('osAppId');
+    if (appIdEl) appIdEl.value = appId || '';
+    setOSStatus(appId);
+    if (appId) initOneSignal(appId);
+    checkReminders();
+  });
+
+  function checkReminders() {
+    const now = new Date();
+    let reminders = getReminders();
+    let changed = false;
+    reminders.forEach(r => {
+      if (r.sent && r.repeat === 'none') return;
+      if (new Date(r.datetime) <= now) {
+        if (Notification.permission === 'granted') {
+          new Notification('⏰ 四國之旅提醒', { body: r.note, icon: './icon.svg' });
+        }
+        if (r.repeat === 'none') { r.sent = true; changed = true; }
+        else {
+          const next = new Date(r.datetime);
+          if (r.repeat === 'daily') next.setDate(next.getDate() + 1);
+          else if (r.repeat === 'weekly') next.setDate(next.getDate() + 7);
+          else if (r.repeat === 'monthly') next.setMonth(next.getMonth() + 1);
+          r.datetime = next.toISOString().slice(0, 16);
+          changed = true;
+        }
+      }
+    });
+    if (changed) { saveRemindersLocal(reminders); syncToOneSignal(reminders); }
+    setTimeout(checkReminders, 60000);
   }
 </script>
 
