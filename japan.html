@@ -4,6 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>2026 日本四國之旅 🗾</title>
+<link rel="manifest" href="./manifest.json">
+<meta name="theme-color" content="#c0607a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="四國之旅">
+<link rel="apple-touch-icon" href="./icon.svg">
 <style>
   :root {
     --sakura: #e8a0b0;
@@ -212,6 +218,37 @@
   .spot-link:hover { text-decoration: underline; }
   .spot-warning { font-size: 0.72rem; color: #e57373; }
 
+  /* INSTALL BANNER */
+  .install-banner {
+    display: none;
+    background: linear-gradient(90deg, #c0607a, #e8a0b0);
+    color: white; padding: 10px 16px;
+    align-items: center; gap: 10px; justify-content: space-between;
+  }
+  .install-banner.show { display: flex; }
+  .install-banner span { font-size: 0.85rem; flex: 1; }
+  .install-btn {
+    background: white; color: #c0607a; border: none;
+    border-radius: 20px; padding: 6px 14px;
+    font-size: 0.8rem; font-weight: 700; cursor: pointer; white-space: nowrap;
+  }
+  .install-dismiss { background: none; border: none; color: white; font-size: 1.2rem; cursor: pointer; padding: 0 4px; }
+
+  /* PUSH SETTINGS */
+  .settings-card {
+    background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+    padding: 16px; margin-top: 24px;
+  }
+  .settings-title { font-size: 0.95rem; font-weight: 700; color: var(--ink); margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
+  .settings-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+  .settings-row label { font-size: 0.8rem; color: var(--soft); min-width: 90px; }
+  .settings-row input { flex: 1; border: 1px solid var(--border); border-radius: 8px; padding: 7px 10px; font-size: 0.82rem; }
+  .settings-status { font-size: 0.75rem; padding: 4px 10px; border-radius: 8px; }
+  .status-ok { background: #e8f5e9; color: #2e7d32; }
+  .status-warn { background: #fff3e0; color: #e65100; }
+  .settings-steps { font-size: 0.75rem; color: var(--soft); line-height: 1.8; margin-top: 10px; padding: 10px; background: var(--sakura-light); border-radius: 8px; }
+  .settings-steps a { color: var(--sakura-dark); }
+
   /* RESPONSIVE */
   @media (max-width: 600px) {
     .site-header h1 { font-size: 1.4rem; }
@@ -231,6 +268,13 @@
     <span class="badge">📋 PNR: RF2LTH</span>
   </div>
 </header>
+
+<!-- INSTALL BANNER -->
+<div id="installBanner" class="install-banner">
+  <span>📱 安裝為 App，離線也能用！</span>
+  <button class="install-btn" onclick="doInstall()">安裝</button>
+  <button class="install-dismiss" onclick="hideInstall()">✕</button>
+</div>
 
 <nav class="tab-nav">
   <button class="tab-btn active" onclick="showTab('itinerary')">
@@ -1689,6 +1733,26 @@
     </div>
   </div>
 
+  <!-- OneSignal Push Settings -->
+  <div class="section-title" style="margin-top:20px;">🔔 OneSignal 推送通知 (24/7)</div>
+  <div class="settings-card">
+    <div class="settings-title">🛰️ 雲端推送設定</div>
+    <div class="settings-row">
+      <label>App ID</label>
+      <input type="text" id="osAppId" placeholder="貼入 OneSignal App ID…" oninput="saveOSSettings()">
+      <span id="osStatus" class="settings-status status-warn">未設定</span>
+    </div>
+    <button onclick="requestNotifPermission()" style="background:var(--sakura-dark);color:white;border:none;border-radius:8px;padding:7px 14px;font-size:0.8rem;font-weight:700;cursor:pointer;margin-top:4px">啟用瀏覽器通知</button>
+    <div class="settings-steps">
+      <strong>設定步驟：</strong><br>
+      1. 到 <a href="https://onesignal.com" target="_blank">onesignal.com</a> 免費注冊<br>
+      2. 建立 Web App → 複製 <strong>App ID</strong> 貼上方<br>
+      3. 在 GitHub Repo Settings → Secrets 加入 <code>ONESIGNAL_APP_ID</code> 及 <code>ONESIGNAL_REST_KEY</code><br>
+      4. 點「啟用瀏覽器通知」並允許<br>
+      5. 完成！GitHub Actions 每 5 分鐘自動發送到期提醒 🎉
+    </div>
+  </div>
+
   <!-- Reminders List -->
   <div class="section-title" style="margin-top:24px;">📋 所有提醒 <span id="reminder-count" class="reminder-count-badge">0</span></div>
   <div id="reminder-list" class="reminder-list">
@@ -2136,6 +2200,53 @@
     fab.addEventListener('click', () => { if (!moved) openModal(null); });
   })();
 
+  /* ── ONESIGNAL ── */
+  function getOSSettings() {
+    try { return JSON.parse(localStorage.getItem('osSettings') || '{}'); } catch { return {}; }
+  }
+  function saveOSSettings() {
+    const appId = document.getElementById('osAppId').value.trim();
+    localStorage.setItem('osSettings', JSON.stringify({ appId }));
+    setOSStatus(appId);
+    if (appId && typeof OneSignal !== 'undefined') OneSignal.init({ appId }).catch(() => {});
+  }
+  function setOSStatus(appId) {
+    const el = document.getElementById('osStatus');
+    if (!el) return;
+    if (appId) { el.textContent = '已設定 ✓'; el.className = 'settings-status status-ok'; }
+    else { el.textContent = '未設定'; el.className = 'settings-status status-warn'; }
+  }
+  async function syncToOneSignal(reminders) {
+    const { appId } = getOSSettings();
+    if (!appId || typeof OneSignal === 'undefined') return;
+    try {
+      const tags = {};
+      reminders.forEach(r => { tags['r_' + r.id] = JSON.stringify(r); });
+      await OneSignal.sendTags(tags);
+    } catch {}
+  }
+
+  /* ── SW SCHEDULING ── */
+  function scheduleViaSW(reminders) {
+    if (!navigator.serviceWorker?.controller) return;
+    navigator.serviceWorker.controller.postMessage({ type: 'SCHEDULE', reminders });
+  }
+
+  /* ── PWA INSTALL PROMPT ── */
+  let deferredInstall = null;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredInstall = e;
+    document.getElementById('installBanner').classList.add('show');
+  });
+  function doInstall() {
+    if (!deferredInstall) return;
+    deferredInstall.prompt();
+    deferredInstall.userChoice.then(() => { deferredInstall = null; hideInstall(); });
+  }
+  function hideInstall() { document.getElementById('installBanner').classList.remove('show'); }
+  window.addEventListener('appinstalled', hideInstall);
+
   /* ── INIT ── */
   window.addEventListener('DOMContentLoaded', () => {
     // Load WA settings
@@ -2143,11 +2254,25 @@
     if (phone) document.getElementById('wa-phone').value = phone;
     if (apikey) document.getElementById('wa-apikey').value = apikey;
 
+    // Load OneSignal settings
+    const { appId } = getOSSettings();
+    const osEl = document.getElementById('osAppId');
+    if (osEl) osEl.value = appId || '';
+    setOSStatus(appId);
+
     renderReminders();
 
     // Notification permission prompt
     if ('Notification' in window && Notification.permission === 'default') {
       setTimeout(() => { document.getElementById('notif-banner').style.display = 'flex'; }, 2000);
+    }
+
+    // Register service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js', { scope: './' }).then(reg => {
+        console.log('SW registered', reg.scope);
+        navigator.serviceWorker.ready.then(() => scheduleViaSW(getReminders()));
+      }).catch(e => console.warn('SW error', e));
     }
 
     // Check reminders every 30 seconds

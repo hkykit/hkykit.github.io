@@ -1,0 +1,16 @@
+{
+  "name": "2026 日本四國之旅",
+  "short_name": "四國之旅",
+  "description": "Japan Shikoku Trip 2026",
+  "start_url": "./japan.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "theme_color": "#c0607a",
+  "orientation": "portrait-primary",
+  "lang": "zh-HK",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
