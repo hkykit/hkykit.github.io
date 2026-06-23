@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的私人教練 🏋️‍♀️</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="floaties" id="floaties"></div>
+
+<div class="container">
+  <a href="dhkykit.html" class="back-link">← Back to My Space</a>
+
+  <h1 class="page-title">我的私人教練 🏋️‍♀️</h1>
+  <p class="page-sub">營養師 × 私人教練 × 煮食專家 — 線條目標追蹤站 🌿</p>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="overview">🎯 總覽</button>
+    <button class="tab-btn" data-tab="body">📏 身體數據</button>
+    <button class="tab-btn" data-tab="nutrition">🥗 營養</button>
+    <button class="tab-btn" data-tab="exercise">💪 運動計劃</button>
+    <button class="tab-btn" data-tab="mealprep">🍱 Meal Prep</button>
+  </div>
+
+  <!-- ════════ 總覽 ════════ -->
+  <section class="tab-panel active" id="panel-overview">
+
+    <div class="panel-card">
+      <h3>🎯 目標設定</h3>
+      <p style="font-size:.9rem;color:var(--g700);font-weight:700;margin-bottom:1rem;">
+        先回答幾個問題，等我了解你想達到的「線條感」目標 — 不是健美粗獷風，而是模特兒般修長、緊緻的肌肉線條。
+      </p>
+      <div class="form-grid">
+        <div class="field">
+          <label>性別</label>
+          <select id="g-gender">
+            <option value="female">女</option>
+            <option value="male">男</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>年齡</label>
+          <input type="number" id="g-age" placeholder="例：28">
+        </div>
+        <div class="field">
+          <label>身高 (cm)</label>
+          <input type="number" id="g-height" placeholder="例：165">
+        </div>
+        <div class="field">
+          <label>目標達成日期</label>
+          <input type="date" id="g-targetdate">
+        </div>
+        <div class="field" style="grid-column:1/-1;">
+          <label>最想改善 / 強調的部位（例：腰線、手臂線條、臀腿）</label>
+          <input type="text" id="g-areas" placeholder="例：收緊腰腹、拉長腿部線條、肩背更挺直">
+        </div>
+        <div class="field" style="grid-column:1/-1;">
+          <label>其他想法（例：希望保持女性化曲線、不想練得太厚實）</label>
+          <textarea id="g-notes" rows="3" placeholder="盡量寫清楚，幫我更準確地幫你規劃 🌿"></textarea>
+        </div>
+      </div>
+      <button class="btn-primary" id="save-goals">儲存目標</button>
+      <p id="goals-saved-hint" style="font-size:.8rem;color:var(--g500);font-weight:800;margin-top:.6rem;display:none;">✅ 已儲存</p>
+    </div>
+
+    <div class="panel-card">
+      <h3>📊 快速狀態</h3>
+      <div class="stat-row" id="overview-stats"></div>
+      <p class="empty-hint" id="overview-empty" style="display:none;">尚未有數據，請到「身體數據」分頁新增第一筆記錄吧 ✨</p>
+    </div>
+
+    <div class="panel-card">
+      <h3>📝 教練 / 物理治療師備忘</h3>
+      <p style="font-size:.88rem;color:var(--g700);font-weight:700;margin-bottom:1rem;">
+        其他私人教練提過的肌肉不平衡或姿勢問題，記錄在這裡，我會配合運動計劃一起留意。
+      </p>
+      <div class="form-grid" style="grid-template-columns:1fr auto;">
+        <input type="text" id="note-input" placeholder="例：骨盆前傾、右肩內旋、核心啟動不足…">
+        <button class="btn-primary" id="add-note">新增備忘</button>
+      </div>
+      <div id="notes-list"></div>
+      <p class="empty-hint" id="notes-empty" style="display:none;">暫無備忘記錄</p>
+    </div>
+
+  </section>
+
+  <!-- ════════ 身體數據 ════════ -->
+  <section class="tab-panel" id="panel-body">
+
+    <div class="panel-card">
+      <h3>📏 新增身體測量數據</h3>
+      <div class="form-grid">
+        <div class="field"><label>日期</label><input type="date" id="m-date"></div>
+        <div class="field"><label>體重 (kg)</label><input type="number" step="0.1" id="m-weight"></div>
+        <div class="field"><label>體脂率 (%)</label><input type="number" step="0.1" id="m-bodyfat"></div>
+        <div class="field"><label>腰圍 (cm)</label><input type="number" step="0.1" id="m-waist"></div>
+        <div class="field"><label>臀圍 (cm)</label><input type="number" step="0.1" id="m-hip"></div>
+        <div class="field"><label>胸圍 (cm)</label><input type="number" step="0.1" id="m-chest"></div>
+        <div class="field"><label>手臂 (cm)</label><input type="number" step="0.1" id="m-arm"></div>
+        <div class="field"><label>大腿 (cm)</label><input type="number" step="0.1" id="m-thigh"></div>
+        <div class="field" style="grid-column:1/-1;"><label>備註（例：身體掃描日期 / 觀察）</label><input type="text" id="m-note" placeholder="例：身體掃描報告日期 2026-06-20"></div>
+      </div>
+      <button class="btn-primary" id="add-measurement">新增記錄</button>
+    </div>
+
+    <div class="panel-card">
+      <h3>📈 體重 / 體脂趨勢</h3>
+      <div class="chart-wrap"><canvas id="weightChart"></canvas></div>
+      <p class="empty-hint" id="chart-empty" style="display:none;">新增至少兩筆記錄後即會顯示趨勢圖</p>
+    </div>
+
+    <div class="panel-card">
+      <h3>🗂 所有記錄</h3>
+      <div class="table-wrap">
+        <table class="data-table" id="measurements-table">
+          <thead><tr>
+            <th>日期</th><th>體重</th><th>體脂%</th><th>腰</th><th>臀</th><th>胸</th><th>手臂</th><th>大腿</th><th>備註</th><th></th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="empty-hint" id="measurements-empty" style="display:none;">暫無記錄，新增第一筆吧！</p>
+    </div>
+
+  </section>
+
+  <!-- ════════ 營養 ════════ -->
+  <section class="tab-panel" id="panel-nutrition">
+
+    <div class="panel-card">
+      <h3>🧮 每日營養目標計算</h3>
+      <p style="font-size:.88rem;color:var(--g700);font-weight:700;margin-bottom:1rem;">
+        以「總覽」的性別/年齡/身高 + 最新體重計算。線條目標 = 溫和熱量缺口 + 高蛋白，避免大重量增肌式的熱量盈餘。
+      </p>
+      <div class="form-grid">
+        <div class="field">
+          <label>活動量</label>
+          <select id="n-activity">
+            <option value="1.2">幾乎不運動（久坐）</option>
+            <option value="1.375">輕量活動（每週運動1-3次）</option>
+            <option value="1.55" selected>中量活動（每週運動3-5次，符合你現時+建議運動量）</option>
+            <option value="1.725">高量活動（每週運動6-7次）</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>熱量缺口幅度</label>
+          <select id="n-deficit">
+            <option value="0.10">溫和 10%（接近目標體態時用）</option>
+            <option value="0.15" selected>建議 15%（減脂同時保持肌肉線條）</option>
+            <option value="0.20">較大 20%（短期加速，不宜長期）</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-primary" id="calc-nutrition">計算目標</button>
+
+      <div id="nutrition-result" style="margin-top:1.4rem;display:none;">
+        <div class="stat-row">
+          <div class="stat-pill"><div class="stat-num" id="r-tdee">-</div><div class="stat-lbl">TDEE (kcal)</div></div>
+          <div class="stat-pill"><div class="stat-num" id="r-target">-</div><div class="stat-lbl">目標熱量 (kcal)</div></div>
+        </div>
+        <div class="macro-card">
+          <div class="stat-pill"><div class="stat-num" id="r-protein">-</div><div class="stat-lbl">蛋白質 (g)</div></div>
+          <div class="stat-pill"><div class="stat-num" id="r-fat">-</div><div class="stat-lbl">脂肪上限 (g)</div></div>
+          <div class="stat-pill"><div class="stat-num" id="r-carb">-</div><div class="stat-lbl">碳水 (g)</div></div>
+          <div class="stat-pill"><div class="stat-num" id="r-sugar">-</div><div class="stat-lbl">游離糖上限 (g)</div></div>
+        </div>
+        <p style="font-size:.82rem;color:var(--g500);font-weight:700;margin-top:.8rem;">
+          蛋白質以 2g/kg 體重計算（保留肌肉線條），脂肪上限為目標熱量的 25%，游離糖上限參考 WHO 建議（總熱量 &lt;5%）。
+        </p>
+      </div>
+    </div>
+
+    <div class="panel-card">
+      <h3>🍽 今日營養記錄</h3>
+      <p style="font-size:.88rem;color:var(--g700);font-weight:700;margin-bottom:1rem;">
+        拍下營養成份表後，把數值（每份）輸入這裡，我會幫你計算累積攝取，特別留意脂肪同糖分有否超標。
+      </p>
+      <div class="form-grid">
+        <div class="field"><label>日期</label><input type="date" id="f-date"></div>
+        <div class="field"><label>食物名稱</label><input type="text" id="f-name" placeholder="例：希臘乳酪"></div>
+        <div class="field"><label>份數</label><input type="number" step="0.1" id="f-servings" value="1"></div>
+        <div class="field"><label>每份熱量 (kcal)</label><input type="number" step="1" id="f-cal"></div>
+        <div class="field"><label>每份蛋白質 (g)</label><input type="number" step="0.1" id="f-protein"></div>
+        <div class="field"><label>每份碳水 (g)</label><input type="number" step="0.1" id="f-carb"></div>
+        <div class="field"><label>每份脂肪 (g)</label><input type="number" step="0.1" id="f-fat"></div>
+        <div class="field"><label>每份糖分 (g)</label><input type="number" step="0.1" id="f-sugar"></div>
+      </div>
+      <button class="btn-primary" id="add-food">新增記錄</button>
+
+      <h4>今日累積攝取</h4>
+      <div id="today-progress"></div>
+
+      <div class="table-wrap">
+        <table class="data-table" id="food-table">
+          <thead><tr><th>日期</th><th>食物</th><th>份數</th><th>熱量</th><th>蛋白</th><th>碳水</th><th>脂肪</th><th>糖</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="empty-hint" id="food-empty" style="display:none;">暫無記錄</p>
+    </div>
+
+  </section>
+
+  <!-- ════════ 運動計劃 ════════ -->
+  <section class="tab-panel" id="panel-exercise">
+
+    <div class="panel-card">
+      <h3>📋 現時安排 vs 建議安排</h3>
+      <p style="font-size:.88rem;color:var(--g700);font-weight:700;margin-bottom:.8rem;">
+        現時：每週跑步 1 次 + 重量訓練 2 次。對於「線條感」目標，訓練頻率同心肺比例都可以再提升：
+      </p>
+      <div class="table-wrap">
+        <table class="data-table plan-table">
+          <thead><tr><th>星期</th><th>建議內容</th><th>重點</th></tr></thead>
+          <tbody>
+            <tr><td>一</td><td>全身阻力訓練 A（推：胸／肩／三頭）</td><td>中等重量、12-15次/組，控制節奏雕塑肌肉線條</td></tr>
+            <tr><td>二</td><td>跑步（間歇 / Tempo run）30-40 分鐘</td><td>心肺 + 燃脂，間歇可加速線條感</td></tr>
+            <tr><td>三</td><td>全身阻力訓練 B（拉：背／二頭／核心）</td><td>強化背部，改善體態挺直</td></tr>
+            <tr><td>四</td><td>主動恢復：伸展 + 姿勢矯正運動</td><td>針對教練備忘的肌肉不平衡問題</td></tr>
+            <tr><td>五</td><td>阻力訓練 C（下肢：腿／臀）</td><td>臀腿線條，避免過度增厚大腿前側</td></tr>
+            <tr><td>六</td><td>心肺（HIIT 或爬山機）20-30 分鐘 + 核心</td><td>提升代謝、收緊腰腹</td></tr>
+            <tr><td>日</td><td>完全休息 或 瑜珈 / 拉伸</td><td>恢復，避免過度訓練</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:.82rem;color:var(--g500);font-weight:700;margin-top:.8rem;">
+        要點：用中等重量、中高次數（10-15 reps），組間休息 45-60 秒，避免低次數大重量的「健美式」厚實感；同時保持 3 次阻力 + 2 次心肺 + 1 次主動恢復的比例，比現時更全面。
+      </p>
+    </div>
+
+    <div class="panel-card">
+      <h3>🏋️ 訓練記錄</h3>
+      <div class="form-grid">
+        <div class="field"><label>日期</label><input type="date" id="w-date"></div>
+        <div class="field"><label>類型</label>
+          <select id="w-type">
+            <option>阻力訓練 A（推）</option>
+            <option>阻力訓練 B（拉）</option>
+            <option>阻力訓練 C（下肢）</option>
+            <option>跑步 / 心肺</option>
+            <option>HIIT</option>
+            <option>伸展 / 主動恢復</option>
+            <option>其他</option>
+          </select>
+        </div>
+        <div class="field" style="grid-column:1/-1;"><label>備註（重量、感覺、姿勢提示）</label><input type="text" id="w-note"></div>
+      </div>
+      <button class="btn-primary" id="add-workout">新增記錄</button>
+      <div class="table-wrap">
+        <table class="data-table" id="workout-table">
+          <thead><tr><th>日期</th><th>類型</th><th>備註</th><th></th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <p class="empty-hint" id="workout-empty" style="display:none;">暫無記錄</p>
+    </div>
+
+  </section>
+
+  <!-- ════════ Meal Prep ════════ -->
+  <section class="tab-panel" id="panel-mealprep">
+
+    <div class="panel-card">
+      <h3>🍱 每週備餐策略（增肌減脂線條期）</h3>
+      <p style="font-size:.88rem;color:var(--g700);font-weight:700;">
+        以你每週 3 小時備餐時間 + 返工日程（一三五辦公室／二四在家，其中一天同事食飯）規劃：
+      </p>
+      <h4>① 週日大批量備餐（約 2 小時）</h4>
+      <ul style="font-size:.88rem;line-height:1.8;color:var(--text);padding-left:1.2rem;">
+        <li>慢煮棒：低溫慢煮雞胸 / 牛展（精準熟度，零額外油），分裝 5 份蛋白質主菜</li>
+        <li>氣炸鍋：氣炸三文魚 / 蝦／豆腐，輪流配搭蛋白質來源</li>
+        <li>烤爐：大盤烤雜菜（椰菜花、彩椒、蘑菜、南瓜）+ 烤地瓜，一爐多用</li>
+        <li>蒸爐：蒸魚、蒸水蛋、蒸雜菜 — 保留營養同口感，最少油</li>
+        <li>分裝入玻璃保鮮盒：午餐 5 盒、晚餐 5 盒，標明日期；3 天放雪櫃，2 天份量放冷凍格</li>
+      </ul>
+      <h4>② 週三補充備餐（約 1 小時）</h4>
+      <ul style="font-size:.88rem;line-height:1.8;color:var(--text);padding-left:1.2rem;">
+        <li>明火快炒少油雜菜，補充新鮮蔬菜份量</li>
+        <li>破壁機：打高蛋白奶昔（乳清 + 菠菜 + 莓類）或自製低糖醬汁</li>
+        <li>翻熱週日剩餘冷凍份量，檢查保鮮盒存量</li>
+      </ul>
+      <h4>③ 榨汁機使用提示</h4>
+      <p style="font-size:.85rem;color:var(--g700);">
+        鮮榨果汁糖分濃縮、纖維流失，減脂期建議以蔬菜為主（青瓜、芹菜、青檬）少量水果調味，每週 1-2 次作補充，唔取代正餐水果。
+      </p>
+    </div>
+
+    <div class="panel-card">
+      <h3>🍳 一日餐單結構建議</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead><tr><th>餐次</th><th>建議</th></tr></thead>
+          <tbody>
+            <tr><td>早餐</td><td>蒸蛋白／水蛋 + 全麥／燕麥 + 少量果仁（前一晚備好，慢煮棒可預先做隔夜蛋白杯）</td></tr>
+            <tr><td>午餐（辦公室）</td><td>帶備好的蛋白質 + 雜菜 + 碳水盒，微波翻熱</td></tr>
+            <tr><td>午餐（同事食飯日）</td><td>優先點選蒸／烤／少汁；蛋白質 + 蔬菜為主；醬汁走或另上；避免炸物同甜飲</td></tr>
+            <tr><td>晚餐（在家日）</td><td>用明火 / 氣炸鍋即做新鮮版本，份量可較午餐稍少</td></tr>
+            <tr><td>晚餐（辦公室回家日）</td><td>直接翻熱備好的盒裝晚餐，節省時間</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="panel-card">
+      <h3>🔧 器具分工</h3>
+      <div class="equip-grid">
+        <div class="equip-card"><b>氣炸鍋</b><br>少油蛋白質（雞胸、魚、豆腐），快速方便</div>
+        <div class="equip-card"><b>慢煮棒</b><br>精準熟度蛋白質，肉質嫩滑唔需要靠油脂提升口感</div>
+        <div class="equip-card"><b>蒸爐</b><br>蔬菜／魚／蛋，保留營養，零額外脂肪</div>
+        <div class="equip-card"><b>烤爐</b><br>大批量烤蔬菜／根莖類碳水，一次過備一週份量</div>
+        <div class="equip-card"><b>明火</b><br>快炒新鮮蔬菜、彈性調整即食餐</div>
+        <div class="equip-card"><b>破壁機</b><br>蛋白奶昔、低糖醬汁、湯底</div>
+        <div class="equip-card"><b>榨汁機</b><br>蔬菜汁補充，少量使用，唔取代正餐水果</div>
+        <div class="equip-card"><b>玻璃保鮮盒</b><br>分隔蛋白／碳水／蔬菜，方便控制份量</div>
+        <div class="equip-card"><b>雪櫃 / 冷凍格</b><br>雪櫃存 3-4 天份量，冷凍格存後備 1-2 週份量</div>
+      </div>
+    </div>
+
+  </section>
+
+</div>
+
+<script>
+  const STORE_KEY = 'trainerData';
+
+  function loadData() {
+    try {
+      return JSON.parse(localStorage.getItem(STORE_KEY)) || defaultData();
+    } catch (e) {
+      return defaultData();
+    }
+  }
+  function defaultData() {
+    return { goals: {}, measurements: [], coachNotes: [], workouts: [], foodLog: [] };
+  }
+  function saveData() { localStorage.setItem(STORE_KEY, JSON.stringify(data)); }
+
+  let data = loadData();
+
+  // ── Tabs ──────────────────────────────
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+    });
+  });
+
+  function todayStr() { return new Date().toISOString().slice(0, 10); }
+  function esc(s) { return (s || '').toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+  // ── Goals ─────────────────────────────
+  function fillGoalsForm() {
+    const g = data.goals;
+    if (!g) return;
+    if (g.gender) document.getElementById('g-gender').value = g.gender;
+    if (g.age) document.getElementById('g-age').value = g.age;
+    if (g.height) document.getElementById('g-height').value = g.height;
+    if (g.targetDate) document.getElementById('g-targetdate').value = g.targetDate;
+    if (g.areas) document.getElementById('g-areas').value = g.areas;
+    if (g.notes) document.getElementById('g-notes').value = g.notes;
+  }
+  document.getElementById('save-goals').addEventListener('click', () => {
+    data.goals = {
+      gender: document.getElementById('g-gender').value,
+      age: document.getElementById('g-age').value,
+      height: document.getElementById('g-height').value,
+      targetDate: document.getElementById('g-targetdate').value,
+      areas: document.getElementById('g-areas').value,
+      notes: document.getElementById('g-notes').value
+    };
+    saveData();
+    const hint = document.getElementById('goals-saved-hint');
+    hint.style.display = 'block';
+    setTimeout(() => hint.style.display = 'none', 2000);
+    renderOverviewStats();
+  });
+
+  // ── Coach notes ───────────────────────
+  document.getElementById('add-note').addEventListener('click', () => {
+    const input = document.getElementById('note-input');
+    const text = input.value.trim();
+    if (!text) return;
+    data.coachNotes.unshift({ date: todayStr(), text });
+    input.value = '';
+    saveData();
+    renderNotes();
+  });
+  function renderNotes() {
+    const list = document.getElementById('notes-list');
+    const empty = document.getElementById('notes-empty');
+    list.innerHTML = '';
+    empty.style.display = data.coachNotes.length ? 'none' : 'block';
+    data.coachNotes.forEach((n, i) => {
+      const div = document.createElement('div');
+      div.className = 'note-item';
+      div.innerHTML = `<div><span class="note-txt">${esc(n.text)}</span><span class="note-date">${esc(n.date)}</span></div>
+        <button class="btn-danger" data-i="${i}">刪除</button>`;
+      div.querySelector('button').addEventListener('click', () => {
+        data.coachNotes.splice(i, 1);
+        saveData();
+        renderNotes();
+      });
+      list.appendChild(div);
+    });
+  }
+
+  // ── Measurements ──────────────────────
+  document.getElementById('add-measurement').addEventListener('click', () => {
+    const date = document.getElementById('m-date').value || todayStr();
+    const entry = {
+      date,
+      weight: document.getElementById('m-weight').value,
+      bodyFat: document.getElementById('m-bodyfat').value,
+      waist: document.getElementById('m-waist').value,
+      hip: document.getElementById('m-hip').value,
+      chest: document.getElementById('m-chest').value,
+      arm: document.getElementById('m-arm').value,
+      thigh: document.getElementById('m-thigh').value,
+      note: document.getElementById('m-note').value
+    };
+    data.measurements.push(entry);
+    data.measurements.sort((a, b) => a.date.localeCompare(b.date));
+    ['m-weight','m-bodyfat','m-waist','m-hip','m-chest','m-arm','m-thigh','m-note'].forEach(id => document.getElementById(id).value = '');
+    saveData();
+    renderMeasurements();
+    renderChart();
+    renderOverviewStats();
+  });
+
+  function renderMeasurements() {
+    const tbody = document.querySelector('#measurements-table tbody');
+    const empty = document.getElementById('measurements-empty');
+    tbody.innerHTML = '';
+    empty.style.display = data.measurements.length ? 'none' : 'block';
+    data.measurements.slice().reverse().forEach(m => {
+      const idx = data.measurements.indexOf(m);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${esc(m.date)}</td><td>${esc(m.weight)}</td><td>${esc(m.bodyFat)}</td>
+        <td>${esc(m.waist)}</td><td>${esc(m.hip)}</td><td>${esc(m.chest)}</td><td>${esc(m.arm)}</td><td>${esc(m.thigh)}</td>
+        <td>${esc(m.note)}</td><td><button class="btn-danger" data-i="${idx}">刪除</button></td>`;
+      tr.querySelector('button').addEventListener('click', () => {
+        data.measurements.splice(idx, 1);
+        saveData();
+        renderMeasurements();
+        renderChart();
+        renderOverviewStats();
+      });
+      tbody.appendChild(tr);
+    });
+  }
+
+  function renderChart() {
+    const canvas = document.getElementById('weightChart');
+    const empty = document.getElementById('chart-empty');
+    const pts = data.measurements.filter(m => m.weight);
+    if (pts.length < 2) {
+      canvas.style.display = 'none';
+      empty.style.display = 'block';
+      return;
+    }
+    canvas.style.display = 'block';
+    empty.style.display = 'none';
+
+    const dpr = window.devicePixelRatio || 1;
+    const w = canvas.clientWidth || canvas.parentElement.clientWidth;
+    const h = 220;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, w, h);
+
+    const weights = pts.map(p => parseFloat(p.weight));
+    const min = Math.min(...weights) - 1;
+    const max = Math.max(...weights) + 1;
+    const padL = 40, padR = 16, padT = 16, padB = 28;
+    const plotW = w - padL - padR;
+    const plotH = h - padT - padB;
+
+    ctx.strokeStyle = '#cfe9da';
+    ctx.lineWidth = 1;
+    for (let i = 0; i <= 4; i++) {
+      const y = padT + (plotH / 4) * i;
+      ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(w - padR, y); ctx.stroke();
+      const val = max - ((max - min) / 4) * i;
+      ctx.fillStyle = '#40916c';
+      ctx.font = '11px Nunito, sans-serif';
+      ctx.fillText(val.toFixed(1), 4, y + 4);
+    }
+
+    ctx.beginPath();
+    ctx.strokeStyle = '#40916c';
+    ctx.lineWidth = 2.5;
+    pts.forEach((p, i) => {
+      const x = padL + (plotW / (pts.length - 1)) * i;
+      const y = padT + plotH - ((parseFloat(p.weight) - min) / (max - min)) * plotH;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+
+    pts.forEach((p, i) => {
+      const x = padL + (plotW / (pts.length - 1)) * i;
+      const y = padT + plotH - ((parseFloat(p.weight) - min) / (max - min)) * plotH;
+      ctx.beginPath();
+      ctx.arc(x, y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#74c69d';
+      ctx.fill();
+      ctx.strokeStyle = '#1b4332';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+    });
+
+    ctx.fillStyle = '#40916c';
+    ctx.font = '10px Nunito, sans-serif';
+    const step = Math.max(1, Math.ceil(pts.length / 6));
+    pts.forEach((p, i) => {
+      if (i % step !== 0 && i !== pts.length - 1) return;
+      const x = padL + (plotW / (pts.length - 1)) * i;
+      ctx.fillText(p.date.slice(5), x - 14, h - 8);
+    });
+  }
+
+  // ── Overview stats ───────────────────
+  function renderOverviewStats() {
+    const wrap = document.getElementById('overview-stats');
+    const empty = document.getElementById('overview-empty');
+    const ms = data.measurements;
+    wrap.innerHTML = '';
+    if (!ms.length) { empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    const latest = ms[ms.length - 1];
+    const first = ms[0];
+    const weightDelta = (latest.weight && first.weight) ? (parseFloat(latest.weight) - parseFloat(first.weight)).toFixed(1) : '-';
+    const stats = [
+      ['最新體重', latest.weight ? latest.weight + ' kg' : '-'],
+      ['最新體脂', latest.bodyFat ? latest.bodyFat + ' %' : '-'],
+      ['體重變化', weightDelta !== '-' ? (weightDelta > 0 ? '+' : '') + weightDelta + ' kg' : '-'],
+      ['記錄次數', ms.length]
+    ];
+    stats.forEach(([lbl, val]) => {
+      const div = document.createElement('div');
+      div.className = 'stat-pill';
+      div.innerHTML = `<div class="stat-num">${val}</div><div class="stat-lbl">${lbl}</div>`;
+      wrap.appendChild(div);
+    });
+  }
+
+  // ── Nutrition ─────────────────────────
+  document.getElementById('calc-nutrition').addEventListener('click', () => {
+    const g = data.goals;
+    const ms = data.measurements;
+    const weight = ms.length ? parseFloat(ms[ms.length - 1].weight) : null;
+    if (!g.height || !g.age || !weight) {
+      alert('請先在「總覽」填寫性別/年齡/身高，並在「身體數據」新增至少一筆含體重的記錄。');
+      return;
+    }
+    const height = parseFloat(g.height), age = parseFloat(g.age);
+    const activity = parseFloat(document.getElementById('n-activity').value);
+    const deficitPct = parseFloat(document.getElementById('n-deficit').value);
+
+    let bmr = g.gender === 'male'
+      ? 10 * weight + 6.25 * height - 5 * age + 5
+      : 10 * weight + 6.25 * height - 5 * age - 161;
+    const tdee = bmr * activity;
+    const target = tdee * (1 - deficitPct);
+    const protein = weight * 2;
+    const fat = (target * 0.25) / 9;
+    const proteinCal = protein * 4;
+    const fatCal = fat * 9;
+    const carb = Math.max(0, (target - proteinCal - fatCal) / 4);
+    const sugar = (target * 0.05) / 4;
+
+    document.getElementById('r-tdee').textContent = Math.round(tdee);
+    document.getElementById('r-target').textContent = Math.round(target);
+    document.getElementById('r-protein').textContent = Math.round(protein);
+    document.getElementById('r-fat').textContent = Math.round(fat);
+    document.getElementById('r-carb').textContent = Math.round(carb);
+    document.getElementById('r-sugar').textContent = Math.round(sugar);
+    document.getElementById('nutrition-result').style.display = 'block';
+
+    data.nutritionTargets = {
+      tdee, calories: target, protein, fat, carb, sugar
+    };
+    saveData();
+    renderFoodLog();
+  });
+
+  // ── Food log ──────────────────────────
+  document.getElementById('add-food').addEventListener('click', () => {
+    const servings = parseFloat(document.getElementById('f-servings').value || 1);
+    const entry = {
+      date: document.getElementById('f-date').value || todayStr(),
+      name: document.getElementById('f-name').value,
+      servings,
+      calories: parseFloat(document.getElementById('f-cal').value || 0) * servings,
+      protein: parseFloat(document.getElementById('f-protein').value || 0) * servings,
+      carbs: parseFloat(document.getElementById('f-carb').value || 0) * servings,
+      fat: parseFloat(document.getElementById('f-fat').value || 0) * servings,
+      sugar: parseFloat(document.getElementById('f-sugar').value || 0) * servings
+    };
+    if (!entry.name) return;
+    data.foodLog.push(entry);
+    ['f-name','f-cal','f-protein','f-carb','f-fat','f-sugar'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('f-servings').value = 1;
+    saveData();
+    renderFoodLog();
+  });
+
+  function renderFoodLog() {
+    const tbody = document.querySelector('#food-table tbody');
+    const empty = document.getElementById('food-empty');
+    tbody.innerHTML = '';
+    empty.style.display = data.foodLog.length ? 'none' : 'block';
+    data.foodLog.slice().reverse().forEach(f => {
+      const idx = data.foodLog.indexOf(f);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${esc(f.date)}</td><td>${esc(f.name)}</td><td>${f.servings}</td>
+        <td>${Math.round(f.calories)}</td><td>${f.protein.toFixed(1)}</td><td>${f.carbs.toFixed(1)}</td>
+        <td>${f.fat.toFixed(1)}</td><td>${f.sugar.toFixed(1)}</td>
+        <td><button class="btn-danger" data-i="${idx}">刪除</button></td>`;
+      tr.querySelector('button').addEventListener('click', () => {
+        data.foodLog.splice(idx, 1);
+        saveData();
+        renderFoodLog();
+      });
+      tbody.appendChild(tr);
+    });
+    renderTodayProgress();
+  }
+
+  function renderTodayProgress() {
+    const wrap = document.getElementById('today-progress');
+    wrap.innerHTML = '';
+    const today = todayStr();
+    const todays = data.foodLog.filter(f => f.date === today);
+    const totals = todays.reduce((acc, f) => {
+      acc.calories += f.calories; acc.protein += f.protein;
+      acc.carbs += f.carbs; acc.fat += f.fat; acc.sugar += f.sugar;
+      return acc;
+    }, { calories: 0, protein: 0, carbs: 0, fat: 0, sugar: 0 });
+
+    const targets = data.nutritionTargets;
+    const rows = [
+      ['熱量 (kcal)', totals.calories, targets ? targets.calories : null],
+      ['蛋白質 (g)', totals.protein, targets ? targets.protein : null],
+      ['脂肪 (g)', totals.fat, targets ? targets.fat : null],
+      ['碳水 (g)', totals.carbs, targets ? targets.carb : null],
+      ['糖分 (g)', totals.sugar, targets ? targets.sugar : null]
+    ];
+    rows.forEach(([lbl, val, target]) => {
+      const pct = target ? Math.min(150, (val / target) * 100) : 0;
+      const isFlagged = lbl.startsWith('脂肪') || lbl.startsWith('糖分');
+      let cls = '';
+      if (target) {
+        if (pct > 100) cls = 'danger';
+        else if (isFlagged && pct > 80) cls = 'warn';
+      }
+      const div = document.createElement('div');
+      div.style.marginBottom = '.7rem';
+      div.innerHTML = `<div style="display:flex;justify-content:space-between;font-size:.82rem;font-weight:800;color:var(--g700);">
+        <span>${lbl}</span><span>${val.toFixed(1)}${target ? ' / ' + Math.round(target) : ''}</span></div>
+        <div class="bar-track"><div class="bar-fill ${cls}" style="width:${target ? Math.min(100, pct) : 0}%"></div></div>`;
+      wrap.appendChild(div);
+    });
+    if (!targets) {
+      const hint = document.createElement('p');
+      hint.className = 'empty-hint';
+      hint.textContent = '先計算營養目標，先可以對比每日進度';
+      wrap.appendChild(hint);
+    }
+  }
+
+  // ── Workouts ──────────────────────────
+  document.getElementById('add-workout').addEventListener('click', () => {
+    const entry = {
+      date: document.getElementById('w-date').value || todayStr(),
+      type: document.getElementById('w-type').value,
+      note: document.getElementById('w-note').value
+    };
+    data.workouts.push(entry);
+    document.getElementById('w-note').value = '';
+    saveData();
+    renderWorkouts();
+  });
+  function renderWorkouts() {
+    const tbody = document.querySelector('#workout-table tbody');
+    const empty = document.getElementById('workout-empty');
+    tbody.innerHTML = '';
+    empty.style.display = data.workouts.length ? 'none' : 'block';
+    data.workouts.slice().reverse().forEach(w => {
+      const idx = data.workouts.indexOf(w);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${esc(w.date)}</td><td>${esc(w.type)}</td><td>${esc(w.note)}</td>
+        <td><button class="btn-danger" data-i="${idx}">刪除</button></td>`;
+      tr.querySelector('button').addEventListener('click', () => {
+        data.workouts.splice(idx, 1);
+        saveData();
+        renderWorkouts();
+      });
+      tbody.appendChild(tr);
+    });
+  }
+
+  // ── Init ──────────────────────────────
+  fillGoalsForm();
+  renderNotes();
+  renderMeasurements();
+  renderChart();
+  renderOverviewStats();
+  renderFoodLog();
+  renderWorkouts();
+  if (data.nutritionTargets) document.getElementById('nutrition-result').style.display = 'block';
+  if (data.nutritionTargets) {
+    document.getElementById('r-tdee').textContent = Math.round(data.nutritionTargets.tdee);
+    document.getElementById('r-target').textContent = Math.round(data.nutritionTargets.calories);
+    document.getElementById('r-protein').textContent = Math.round(data.nutritionTargets.protein);
+    document.getElementById('r-fat').textContent = Math.round(data.nutritionTargets.fat);
+    document.getElementById('r-carb').textContent = Math.round(data.nutritionTargets.carb);
+    document.getElementById('r-sugar').textContent = Math.round(data.nutritionTargets.sugar);
+  }
+  window.addEventListener('resize', renderChart);
+
+  // floating bg
+  const FLOATIES = ['🥗','💪','🌿','✨','🍀','🏃‍♀️','💚','📏'];
+  const el = document.getElementById('floaties');
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement('span');
+    s.className = 'floaty';
+    s.textContent = FLOATIES[Math.floor(Math.random() * FLOATIES.length)];
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.animationDuration = (12 + Math.random() * 14) + 's';
+    s.style.animationDelay = (Math.random() * 16) + 's';
+    s.style.fontSize = (.9 + Math.random() * .8) + 'rem';
+    el.appendChild(s);
+  }
+</script>
+</body>
+</html>
