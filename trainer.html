@@ -16,6 +16,22 @@
   <h1 class="page-title">我的私人教練 🏋️‍♀️</h1>
   <p class="page-sub">營養師 × 私人教練 × 煮食專家 — 線條目標追蹤站 🌿</p>
 
+  <div class="panel-card" id="sync-card" style="margin-bottom:1.5rem;">
+    <h3>☁️ 跨裝置同步</h3>
+    <div id="sync-logged-out">
+      <p style="font-size:.85rem;color:var(--g700);margin-bottom:.8rem;">登入後資料會自動同步到所有裝置（用 Email 收登入連結，唔需要密碼）。</p>
+      <div class="form-grid">
+        <div class="field"><label>Email</label><input type="email" id="sync-email" placeholder="you@example.com"></div>
+      </div>
+      <button class="btn-secondary" id="sync-login-btn" type="button">📧 寄送登入連結</button>
+      <span id="sync-status" style="font-size:.85rem;color:var(--g700);margin-left:.5rem;"></span>
+    </div>
+    <div id="sync-logged-in" style="display:none;">
+      <p style="font-size:.85rem;color:var(--g700);">✅ 已登入：<span id="sync-user-email"></span> — 資料會自動同步</p>
+      <button class="btn-secondary" id="sync-logout-btn" type="button">登出</button>
+    </div>
+  </div>
+
   <div class="tabs">
     <button class="tab-btn active" data-tab="overview">🎯 總覽</button>
     <button class="tab-btn" data-tab="body">📏 身體數據</button>
@@ -327,6 +343,7 @@
 
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
   const STORE_KEY = 'trainerData';
 
@@ -340,9 +357,74 @@
   function defaultData() {
     return { goals: {}, measurements: [], coachNotes: [], workouts: [], foodLog: [] };
   }
-  function saveData() { localStorage.setItem(STORE_KEY, JSON.stringify(data)); }
+  function saveData() {
+    localStorage.setItem(STORE_KEY, JSON.stringify(data));
+    pushRemoteData();
+  }
 
   let data = loadData();
+
+  // ── Cross-device sync (Supabase) ───────
+  // Anon/publishable key — safe to expose client-side, access is restricted
+  // by Row Level Security policies on the trainer_data table (see supabase/schema.sql).
+  const SUPABASE_URL = 'https://jhprzcwgilhkxrrimkks.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpocHJ6Y3dnaWxoa3hycmlta2tzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIyOTE5NzIsImV4cCI6MjA5Nzg2Nzk3Mn0.Rj1DlybAOYxhOy40QhAXSQ5CKAPDepirvm0Q2XQzSis';
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  let syncUserId = null;
+  let syncPushTimer = null;
+
+  function pushRemoteData() {
+    if (!syncUserId) return;
+    clearTimeout(syncPushTimer);
+    syncPushTimer = setTimeout(async () => {
+      const { error } = await sb.from('trainer_data').upsert({
+        user_id: syncUserId, data, updated_at: new Date().toISOString()
+      });
+      if (error) console.error('sync push failed', error);
+    }, 800);
+  }
+
+  async function pullRemoteData() {
+    const { data: row, error } = await sb.from('trainer_data').select('data').eq('user_id', syncUserId).maybeSingle();
+    if (error) { console.error('sync pull failed', error); return; }
+    if (row && row.data) {
+      data = row.data;
+      localStorage.setItem(STORE_KEY, JSON.stringify(data));
+      renderAll();
+    } else {
+      pushRemoteData();
+    }
+  }
+
+  async function handleSession(session) {
+    if (session && session.user) {
+      syncUserId = session.user.id;
+      document.getElementById('sync-logged-out').style.display = 'none';
+      document.getElementById('sync-logged-in').style.display = '';
+      document.getElementById('sync-user-email').textContent = session.user.email;
+      await pullRemoteData();
+    } else {
+      syncUserId = null;
+      document.getElementById('sync-logged-out').style.display = '';
+      document.getElementById('sync-logged-in').style.display = 'none';
+    }
+  }
+
+  document.getElementById('sync-login-btn').addEventListener('click', async () => {
+    const email = document.getElementById('sync-email').value.trim();
+    const statusEl = document.getElementById('sync-status');
+    if (!email) return;
+    statusEl.textContent = '寄送中…';
+    const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: window.location.href } });
+    statusEl.textContent = error ? '⚠️ ' + error.message : '✅ 已寄出，請check email開連結登入';
+  });
+  document.getElementById('sync-logout-btn').addEventListener('click', async () => {
+    await sb.auth.signOut();
+  });
+
+  sb.auth.onAuthStateChange((_event, session) => { handleSession(session); });
+  sb.auth.getSession().then(({ data: { session } }) => handleSession(session));
 
   // ── Tabs ──────────────────────────────
   document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -766,22 +848,25 @@
   }
 
   // ── Init ──────────────────────────────
-  fillGoalsForm();
-  renderNotes();
-  renderMeasurements();
-  renderChart();
-  renderOverviewStats();
-  renderFoodLog();
-  renderWorkouts();
-  if (data.nutritionTargets) document.getElementById('nutrition-result').style.display = 'block';
-  if (data.nutritionTargets) {
-    document.getElementById('r-tdee').textContent = Math.round(data.nutritionTargets.tdee);
-    document.getElementById('r-target').textContent = Math.round(data.nutritionTargets.calories);
-    document.getElementById('r-protein').textContent = Math.round(data.nutritionTargets.protein);
-    document.getElementById('r-fat').textContent = Math.round(data.nutritionTargets.fat);
-    document.getElementById('r-carb').textContent = Math.round(data.nutritionTargets.carb);
-    document.getElementById('r-sugar').textContent = Math.round(data.nutritionTargets.sugar);
+  function renderAll() {
+    fillGoalsForm();
+    renderNotes();
+    renderMeasurements();
+    renderChart();
+    renderOverviewStats();
+    renderFoodLog();
+    renderWorkouts();
+    if (data.nutritionTargets) document.getElementById('nutrition-result').style.display = 'block';
+    if (data.nutritionTargets) {
+      document.getElementById('r-tdee').textContent = Math.round(data.nutritionTargets.tdee);
+      document.getElementById('r-target').textContent = Math.round(data.nutritionTargets.calories);
+      document.getElementById('r-protein').textContent = Math.round(data.nutritionTargets.protein);
+      document.getElementById('r-fat').textContent = Math.round(data.nutritionTargets.fat);
+      document.getElementById('r-carb').textContent = Math.round(data.nutritionTargets.carb);
+      document.getElementById('r-sugar').textContent = Math.round(data.nutritionTargets.sugar);
+    }
   }
+  renderAll();
   window.addEventListener('resize', renderChart);
 
   // floating bg
