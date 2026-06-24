@@ -177,6 +177,11 @@
       <p style="font-size:.88rem;color:var(--g700);font-weight:700;margin-bottom:1rem;">
         拍下營養成份表後，把數值（每份）輸入這裡，我會幫你計算累積攝取，特別留意脂肪同糖分有否超標。
       </p>
+      <div style="margin-bottom:1rem;">
+        <input type="file" id="f-photo" accept="image/*" capture="environment" style="display:none;">
+        <button class="btn-secondary" id="f-photo-btn" type="button">📷 拍照分析（AI 估算營養）</button>
+        <span id="f-photo-status" style="font-size:.85rem;color:var(--g700);margin-left:.5rem;"></span>
+      </div>
       <div class="form-grid">
         <div class="field"><label>日期</label><input type="date" id="f-date"></div>
         <div class="field"><label>食物名稱</label><input type="text" id="f-name" placeholder="例：希臘乳酪"></div>
@@ -587,6 +592,61 @@
     };
     saveData();
     renderFoodLog();
+  });
+
+  // ── AI 拍照分析 ──────────────────────────
+  const WORKER_URL_KEY = 'trainerFoodWorkerUrl';
+  function getWorkerUrl() {
+    let url = localStorage.getItem(WORKER_URL_KEY);
+    if (!url) {
+      url = prompt('請輸入你嘅 Cloudflare Worker 網址（一次性設定，會記住）：', 'https://food-analyzer.<你的子網域>.workers.dev');
+      if (url) localStorage.setItem(WORKER_URL_KEY, url.trim());
+    }
+    return url ? url.trim() : '';
+  }
+  function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+  document.getElementById('f-photo-btn').addEventListener('click', () => {
+    document.getElementById('f-photo').click();
+  });
+  document.getElementById('f-photo').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    e.target.value = '';
+    if (!file) return;
+    const workerUrl = getWorkerUrl();
+    if (!workerUrl) return;
+    const statusEl = document.getElementById('f-photo-status');
+    const btn = document.getElementById('f-photo-btn');
+    btn.disabled = true;
+    statusEl.textContent = '分析中…';
+    try {
+      const base64 = await fileToBase64(file);
+      const res = await fetch(workerUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ image: base64, mediaType: file.type || 'image/jpeg' })
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || '分析失敗');
+      document.getElementById('f-name').value = result.name || '';
+      document.getElementById('f-servings').value = 1;
+      document.getElementById('f-cal').value = result.calories ?? '';
+      document.getElementById('f-protein').value = result.protein ?? '';
+      document.getElementById('f-carb').value = result.carbs ?? '';
+      document.getElementById('f-fat').value = result.fat ?? '';
+      document.getElementById('f-sugar').value = result.sugar ?? '';
+      statusEl.textContent = '✅ 已填入估算數值，請核對後新增記錄';
+    } catch (err) {
+      statusEl.textContent = '⚠️ ' + (err.message || '分析失敗，請重試');
+    } finally {
+      btn.disabled = false;
+    }
   });
 
   // ── Food log ──────────────────────────
