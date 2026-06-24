@@ -1,7 +1,8 @@
 # Cross-device sync (Supabase)
 
-`trainer.html` syncs its data (goals, measurements, food log, workouts, etc.)
-across devices using Supabase Auth + a single `trainer_data` table.
+`trainer.html` stores all its data (goals, measurements, food log, workouts,
+etc.) in Supabase — there's no localStorage fallback. Sign-in is required to
+view or edit anything, which is also what scopes each user to their own row.
 
 ## One-time setup
 
@@ -22,7 +23,8 @@ across devices using Supabase Auth + a single `trainer_data` table.
   policies (created by `schema.sql`) are what actually restrict each user to
   their own data. Never put the Supabase `service_role` key in this repo or
   any client-side code — that one is a real secret.
-- While signed in, every `saveData()` call also pushes the local data to
-  Supabase (debounced ~800ms). On sign-in, the latest copy is pulled down
-  and replaces local data so all devices stay in sync.
-- Signed out, the app works exactly as before, using only localStorage.
+- While signed in, every `saveData()` call pushes to Supabase (debounced
+  ~800ms). On sign-in, the latest copy is pulled down from Supabase and
+  rendered, so all devices stay in sync.
+- Signed out, the app content is hidden behind a "please sign in" gate —
+  there is no local copy of your data sitting in the browser.

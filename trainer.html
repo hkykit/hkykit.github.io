@@ -19,7 +19,7 @@
   <div class="panel-card" id="sync-card" style="margin-bottom:1.5rem;">
     <h3>☁️ 跨裝置同步</h3>
     <div id="sync-logged-out">
-      <p style="font-size:.85rem;color:var(--g700);margin-bottom:.8rem;">登入後資料會自動同步到所有裝置（用 Email 收登入連結，唔需要密碼）。</p>
+      <p style="font-size:.85rem;color:var(--g700);margin-bottom:.8rem;">資料現在儲存喺雲端，請先登入（用 Email 收登入連結，唔需要密碼）。</p>
       <div class="form-grid">
         <div class="field"><label>Email</label><input type="email" id="sync-email" placeholder="you@example.com"></div>
       </div>
@@ -31,6 +31,10 @@
       <button class="btn-secondary" id="sync-logout-btn" type="button">登出</button>
     </div>
   </div>
+
+  <p class="empty-hint" id="auth-gate-hint">🔒 請先登入先可以查看同編輯你嘅資料。</p>
+
+  <div id="app-content" style="display:none;">
 
   <div class="tabs">
     <button class="tab-btn active" data-tab="overview">🎯 總覽</button>
@@ -341,30 +345,24 @@
 
   </section>
 
+  </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
-  const STORE_KEY = 'trainerData';
-
-  function loadData() {
-    try {
-      return JSON.parse(localStorage.getItem(STORE_KEY)) || defaultData();
-    } catch (e) {
-      return defaultData();
-    }
-  }
   function defaultData() {
     return { goals: {}, measurements: [], coachNotes: [], workouts: [], foodLog: [] };
   }
   function saveData() {
-    localStorage.setItem(STORE_KEY, JSON.stringify(data));
     pushRemoteData();
   }
 
-  let data = loadData();
+  let data = defaultData();
 
   // ── Cross-device sync (Supabase) ───────
+  // Data lives entirely in Supabase now — there's no localStorage fallback,
+  // so you must be signed in to view or edit anything.
   // Anon/publishable key — safe to expose client-side, access is restricted
   // by Row Level Security policies on the trainer_data table (see supabase/schema.sql).
   const SUPABASE_URL = 'https://jhprzcwgilhkxrrimkks.supabase.co';
@@ -388,26 +386,29 @@
   async function pullRemoteData() {
     const { data: row, error } = await sb.from('trainer_data').select('data').eq('user_id', syncUserId).maybeSingle();
     if (error) { console.error('sync pull failed', error); return; }
-    if (row && row.data) {
-      data = row.data;
-      localStorage.setItem(STORE_KEY, JSON.stringify(data));
-      renderAll();
-    } else {
-      pushRemoteData();
-    }
+    data = (row && row.data) ? row.data : defaultData();
+    renderAll();
+    if (!row) pushRemoteData();
   }
 
   async function handleSession(session) {
+    const appEl = document.getElementById('app-content');
+    const gateEl = document.getElementById('auth-gate-hint');
     if (session && session.user) {
       syncUserId = session.user.id;
       document.getElementById('sync-logged-out').style.display = 'none';
       document.getElementById('sync-logged-in').style.display = '';
       document.getElementById('sync-user-email').textContent = session.user.email;
+      appEl.style.display = '';
+      gateEl.style.display = 'none';
       await pullRemoteData();
     } else {
       syncUserId = null;
+      data = defaultData();
       document.getElementById('sync-logged-out').style.display = '';
       document.getElementById('sync-logged-in').style.display = 'none';
+      appEl.style.display = 'none';
+      gateEl.style.display = '';
     }
   }
 
