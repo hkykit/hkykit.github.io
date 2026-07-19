@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>News Agent Team — Daily Intelligence</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Noto+Sans+HK:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #0a0d14;
+  --surface: #111520;
+  --border: #1e2535;
+  --accent: #3d7fff;
+  --accent2: #00d4aa;
+  --warn: #ff6b35;
+  --text-primary: #e8ecf4;
+  --text-secondary: #7a8599;
+  --text-dim: #404a5e;
+  --tag-fintech: #1a3a6b;
+  --tag-crypto: #1a4a3a;
+  --tag-macro: #3a2a1a;
+  --tag-ai: #2a1a4a;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Space Grotesk', 'Noto Sans HK', sans-serif;
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+header {
+  border-bottom: 1px solid var(--border);
+  padding: 20px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  width: 32px; height: 32px;
+  background: var(--accent);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+}
+
+.logo-text {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.logo-sub {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.08em;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+#timestamp {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+/* ── API Key Banner ── */
+.apikey-bar {
+  background: #0d1829;
+  border-bottom: 1px solid #1e3050;
+  padding: 10px 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.apikey-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.apikey-input {
+  flex: 1;
+  min-width: 220px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 12px;
+  color: var(--text-primary);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  outline: none;
+  transition: border-color 0.15s;
+  letter-spacing: 0.04em;
+}
+
+.apikey-input:focus { border-color: var(--accent); }
+.apikey-input::placeholder { color: var(--text-dim); letter-spacing: 0; }
+
+.apikey-save-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 14px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.apikey-save-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+
+.apikey-status {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+.apikey-status.ok { color: var(--accent2); }
+.apikey-status.missing { color: var(--warn); }
+
+/* ── Agent Config Panel ── */
+.config-panel {
+  padding: 24px 28px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.config-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+.agent-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.agent-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+  user-select: none;
+}
+
+.agent-card:hover { border-color: var(--accent); }
+.agent-card.active { border-color: var(--accent); background: #0d1829; }
+.agent-card.active::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 8px 8px 0 0;
+}
+
+.agent-icon { font-size: 20px; margin-bottom: 6px; }
+.agent-name { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+.agent-desc { font-size: 10px; color: var(--text-secondary); line-height: 1.4; }
+.agent-card.active .agent-name { color: var(--accent); }
+
+.controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.topic-input {
+  flex: 1;
+  min-width: 200px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 9px 14px;
+  color: var(--text-primary);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.topic-input:focus { border-color: var(--accent); }
+.topic-input::placeholder { color: var(--text-dim); }
+
+.lang-select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 9px 14px;
+  color: var(--text-primary);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+}
+
+.run-btn {
+  background: var(--accent);
+  border: none;
+  border-radius: 6px;
+  padding: 9px 20px;
+  color: white;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.run-btn:hover { background: #5590ff; transform: translateY(-1px); }
+.run-btn:disabled { background: var(--text-dim); cursor: not-allowed; transform: none; }
+
+/* ── Main Content ── */
+main { padding: 24px 28px; }
+
+/* ── Status Bar ── */
+.status-bar {
+  display: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  gap: 12px;
+  align-items: center;
+}
+
+.status-bar.visible { display: flex; }
+
+.pulse {
+  width: 8px; height: 8px;
+  background: var(--accent2);
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.status-text {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+.agent-trace {
+  font-size: 11px;
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Report ── */
+#report-area { display: none; }
+#report-area.visible { display: block; }
+
+.report-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.report-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+.report-title {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.copy-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 7px 14px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.copy-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+
+/* ── News Cards ── */
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  margin: 24px 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.news-grid { display: grid; gap: 12px; }
+
+.news-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px;
+  transition: border-color 0.15s;
+}
+
+.news-card:hover { border-color: var(--text-dim); }
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.card-title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  flex: 1;
+}
+
+.card-tag {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tag-fintech { background: var(--tag-fintech); color: #6ba3ff; }
+.tag-crypto  { background: var(--tag-crypto);  color: #00d4aa; }
+.tag-macro   { background: var(--tag-macro);   color: #ff9966; }
+.tag-ai      { background: var(--tag-ai);      color: #b899ff; }
+.tag-general { background: #1a1a2e;            color: #8899bb; }
+
+.card-summary {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.impact-badge {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.impact-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.impact-high .impact-dot { background: var(--warn); }
+.impact-med  .impact-dot { background: #ffd166; }
+.impact-low  .impact-dot { background: var(--accent2); }
+
+/* ── Summary Box ── */
+.summary-box {
+  background: #0d1829;
+  border: 1px solid #1e3050;
+  border-radius: 8px;
+  padding: 18px;
+  margin-top: 20px;
+}
+
+.summary-box-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.summary-box p {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+/* ── Empty / Error ── */
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-dim);
+}
+
+.empty-icon  { font-size: 40px; margin-bottom: 12px; }
+.empty-title { font-size: 15px; font-weight: 500; margin-bottom: 6px; color: var(--text-secondary); }
+.empty-desc  { font-size: 12px; line-height: 1.6; }
+
+.error-box {
+  background: #1a0a0a;
+  border: 1px solid #4a1a1a;
+  border-radius: 8px;
+  padding: 16px 18px;
+  color: #ff8888;
+  font-size: 13px;
+  display: none;
+  margin-bottom: 16px;
+}
+.error-box.visible { display: block; }
+
+/* ── Responsive ── */
+@media (max-width: 600px) {
+  header, .apikey-bar, .config-panel, main { padding-left: 16px; padding-right: 16px; }
+  .agent-grid { grid-template-columns: repeat(2, 1fr); }
+  .report-title { font-size: 18px; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-icon">&#x26A1;</div>
+    <div>
+      <div class="logo-text">News Agent Team</div>
+      <div class="logo-sub">MULTI-AGENT &middot; DAILY INTELLIGENCE</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <span id="timestamp"></span>
+  </div>
+</header>
+
+<!-- API Key Bar -->
+<div class="apikey-bar">
+  <span class="apikey-label">&#x1F511; ANTHROPIC API KEY</span>
+  <input class="apikey-input" id="apikey-input" type="password"
+    placeholder="sk-ant-api03-..." autocomplete="off" />
+  <button class="apikey-save-btn" onclick="saveKey()">Save</button>
+  <span class="apikey-status" id="apikey-status"></span>
+</div>
+
+<div class="config-panel">
+  <div class="config-title">Select Agent Team</div>
+  <div class="agent-grid">
+    <div class="agent-card active" data-agent="fintech" onclick="toggleAgent(this)">
+      <div class="agent-icon">&#x1F3E6;</div>
+      <div class="agent-name">Fintech Agent</div>
+      <div class="agent-desc">Banking, payments, digital assets, regulation</div>
+    </div>
+    <div class="agent-card active" data-agent="crypto" onclick="toggleAgent(this)">
+      <div class="agent-icon">&#x20BF;</div>
+      <div class="agent-name">Crypto Agent</div>
+      <div class="agent-desc">BTC, ETH, DeFi, stablecoins, tokenization</div>
+    </div>
+    <div class="agent-card active" data-agent="macro" onclick="toggleAgent(this)">
+      <div class="agent-icon">&#x1F30D;</div>
+      <div class="agent-name">Macro Agent</div>
+      <div class="agent-desc">Fed, rates, FX, global markets, HK/China</div>
+    </div>
+    <div class="agent-card active" data-agent="ai" onclick="toggleAgent(this)">
+      <div class="agent-icon">&#x1F916;</div>
+      <div class="agent-name">AI &amp; Tech Agent</div>
+      <div class="agent-desc">AI models, robotics, emerging tech</div>
+    </div>
+    <div class="agent-card" data-agent="general" onclick="toggleAgent(this)">
+      <div class="agent-icon">&#x1F4F0;</div>
+      <div class="agent-name">General Agent</div>
+      <div class="agent-desc">Breaking news, geopolitics, business</div>
+    </div>
+  </div>
+  <div class="controls">
+    <input class="topic-input" id="topic-input"
+      placeholder="&#x52A0;&#x5165;&#x7279;&#x5B9A;&#x4E3B;&#x984C;&#xFF08;&#x53EF;&#x9078;&#xFF09;&#x4F8B;&#xFF1A;&#x9999;&#x6E2F;&#x865B;&#x64EC;&#x8CC7;&#x7522;&#x76E3;&#x7BA1;, Fed&#x5229;&#x7387;&#x6C7A;&#x8B70;..." />
+    <select class="lang-select" id="lang-select">
+      <option value="zh">&#x4E2D;&#x6587;&#x5831;&#x544A;</option>
+      <option value="en">English Report</option>
+    </select>
+    <button class="run-btn" id="run-btn" onclick="runAgents()">
+      &#x26A1; &#x57F7;&#x884C; Agent Team
+    </button>
+  </div>
+</div>
+
+<main>
+  <div class="status-bar" id="status-bar">
+    <div class="pulse"></div>
+    <div class="status-text" id="status-text">&#x521D;&#x59CB;&#x5316; Agent Team...</div>
+    <div class="agent-trace" id="agent-trace"></div>
+  </div>
+
+  <div class="error-box" id="error-box"></div>
+
+  <div id="report-area">
+    <div class="report-header">
+      <div>
+        <div class="report-meta" id="report-meta"></div>
+        <div class="report-title" id="report-title"></div>
+      </div>
+      <button class="copy-btn" onclick="copyReport()">&#x1F4CB; &#x8907;&#x88FD;&#x5831;&#x544A;</button>
+    </div>
+    <div id="news-content"></div>
+    <div class="summary-box" id="summary-box" style="display:none">
+      <div class="summary-box-title">&#x26A1; Editor Synthesis &mdash; &#x7DB8;&#x5408;&#x5206;&#x6790;</div>
+      <p id="summary-text"></p>
+    </div>
+  </div>
+
+  <div class="empty-state" id="empty-state">
+    <div class="empty-icon">&#x1F6F0;&#xFE0F;</div>
+    <div class="empty-title">Agent Team &#x5F85;&#x547D;&#x4E2D;</div>
+    <div class="empty-desc">
+      &#x9078;&#x64C7; Agent&#x3001;&#x8A2D;&#x5B9A;&#x4E3B;&#x984C;&#xFF0C;&#x7136;&#x5F8C;&#x6309;&#x300C;&#x57F7;&#x884C; Agent Team&#x300D;<br>
+      &#x7CFB;&#x7D71;&#x5C07;&#x8ABF;&#x7528;&#x591A;&#x500B; AI Agent &#x5E73;&#x884C;&#x641C;&#x7D22;&#x6700;&#x65B0;&#x65B0;&#x805E;&#x4E26;&#x751F;&#x6210;&#x5831;&#x544A;
+    </div>
+  </div>
+</main>
+
+<script>
+// ── Timestamp ──
+function updateTime() {
+  var now = new Date();
+  document.getElementById('timestamp').textContent =
+    now.toLocaleDateString('zh-HK', { year: 'numeric', month: '2-digit', day: '2-digit' }) + ' ' +
+    now.toLocaleTimeString('zh-HK', { hour: '2-digit', minute: '2-digit' });
+}
+updateTime();
+setInterval(updateTime, 30000);
+
+// ── API Key management ──
+var STORAGE_KEY = 'news_agent_apikey';
+
+function loadKey() {
+  var k = localStorage.getItem(STORAGE_KEY) || '';
+  if (k) {
+    document.getElementById('apikey-input').value = k;
+    setKeyStatus(true);
+  } else {
+    setKeyStatus(false);
+  }
+}
+
+function saveKey() {
+  var k = document.getElementById('apikey-input').value.trim();
+  if (k) {
+    localStorage.setItem(STORAGE_KEY, k);
+    setKeyStatus(true);
+  } else {
+    localStorage.removeItem(STORAGE_KEY);
+    setKeyStatus(false);
+  }
+}
+
+function setKeyStatus(ok) {
+  var el = document.getElementById('apikey-status');
+  if (ok) {
+    el.textContent = '✓ Key saved';
+    el.className = 'apikey-status ok';
+  } else {
+    el.textContent = '⚠ No key — enter your Anthropic API key above';
+    el.className = 'apikey-status missing';
+  }
+}
+
+loadKey();
+
+// allow Enter key in apikey field to save
+document.getElementById('apikey-input').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') saveKey();
+});
+
+// ── Agent Toggle ──
+function toggleAgent(el) {
+  el.classList.toggle('active');
+}
+
+// ── Run Agents ──
+var reportText = '';
+
+async function runAgents() {
+  var apiKey = (document.getElementById('apikey-input').value.trim() ||
+                localStorage.getItem(STORAGE_KEY) || '').trim();
+
+  if (!apiKey) {
+    showError('API Key &#x672A;&#x8A2D;&#x5B9A;&#xFF0C;&#x8ACB;&#x5728;&#x9801;&#x9762;&#x9802;&#x90E8;&#x8F38;&#x5165;&#x60A8;&#x7684; Anthropic API Key&#x3002;');
+    return;
+  }
+
+  var activeAgents = Array.from(document.querySelectorAll('.agent-card.active'))
+                          .map(function(el) { return el.dataset.agent; });
+  if (activeAgents.length === 0) {
+    showError('&#x8ACB;&#x81F3;&#x5C11;&#x9078;&#x64C7;&#x4E00;&#x500B; Agent&#x3002;');
+    return;
+  }
+
+  var topic = document.getElementById('topic-input').value.trim();
+  var lang  = document.getElementById('lang-select').value;
+  var btn        = document.getElementById('run-btn');
+  var statusBar  = document.getElementById('status-bar');
+  var statusText = document.getElementById('status-text');
+  var agentTrace = document.getElementById('agent-trace');
+  var reportArea = document.getElementById('report-area');
+  var emptyState = document.getElementById('empty-state');
+  var errorBox   = document.getElementById('error-box');
+
+  btn.disabled = true;
+  btn.textContent = '⏳ 執行中...';
+  errorBox.classList.remove('visible');
+  reportArea.classList.remove('visible');
+  emptyState.style.display = 'none';
+  statusBar.classList.add('visible');
+
+  var agentNames = {
+    fintech: 'Fintech Agent 🏦',
+    crypto:  'Crypto Agent ₿',
+    macro:   'Macro Agent 🌍',
+    ai:      'AI & Tech Agent 🤖',
+    general: 'General Agent 📰'
+  };
+
+  var agentTopics = {
+    fintech: 'fintech, digital banking, digital asset custody, stablecoins, tokenized funds, wealth management, banking regulation, HKMA, SFC, MAS, payments',
+    crypto:  'Bitcoin, Ethereum, cryptocurrency, DeFi, stablecoins, tokenization, RWA, crypto regulation, Web3, blockchain',
+    macro:   'Federal Reserve, interest rates, inflation, USD, HKD, Hong Kong economy, China economy, global markets, geopolitics, trade',
+    ai:      'artificial intelligence, large language models, AI regulation, robotics, OpenAI, Anthropic, Google DeepMind, emerging technology',
+    general: 'breaking news, geopolitics, major business events, mergers acquisitions, IPO, global economy'
+  };
+
+  var agentFocus         = activeAgents.map(function(a) { return agentNames[a]; }).join(', ');
+  var agentTopicsCombined = activeAgents.map(function(a) { return agentTopics[a]; }).join('; ');
+  var topicAddendum      = topic ? '\n\nUser has specifically requested focus on: "' + topic + '"' : '';
+
+  var langInstruction = lang === 'zh'
+    ? 'Write ALL output in Traditional Chinese (繁體中文). Headlines, summaries, and analysis must all be in Chinese.'
+    : 'Write ALL output in English.';
+
+  var today = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+  var systemPrompt =
+    'You are the Editor-in-Chief coordinating a multi-agent news intelligence team. ' +
+    'You have just received research from these agents: ' + agentFocus + '.\n\n' +
+    'Your task: Synthesize the latest real-world news (as of today, ' + today + ') into a structured daily briefing report.\n\n' +
+    langInstruction + '\n\n' +
+    'IMPORTANT: Use web_search to find the LATEST news. Search for news from today or the past 24-48 hours.\n\n' +
+    'Output ONLY valid JSON, no markdown, no explanation outside JSON. Structure:\n' +
+    '{\n' +
+    '  "reportTitle": "string — report title with date",\n' +
+    '  "generatedAt": "string — current date/time",\n' +
+    '  "sections": [\n' +
+    '    {\n' +
+    '      "sectionName": "string — agent/category name",\n' +
+    '      "agentIcon": "string — single emoji",\n' +
+    '      "items": [\n' +
+    '        {\n' +
+    '          "headline": "string — news headline",\n' +
+    '          "summary": "string — 2-3 sentence summary with context and implications",\n' +
+    '          "tag": "fintech|crypto|macro|ai|general",\n' +
+    '          "impact": "high|medium|low",\n' +
+    '          "source": "string — source name",\n' +
+    '          "timeAgo": "string — e.g. 2小時前 or 2h ago"\n' +
+    '        }\n' +
+    '      ]\n' +
+    '    }\n' +
+    '  ],\n' +
+    '  "editorSynthesis": "string — 3-4 sentence overall market/world synthesis"\n' +
+    '}\n\n' +
+    'Search topics: ' + agentTopicsCombined + topicAddendum + '\n\n' +
+    'Find 3-5 real, specific news items per active section. Include actual company names, figures, and developments. Do not fabricate news.';
+
+  // Animate status
+  var statusMessages = [
+    'Agent Team 初始化 (' + activeAgents.length + ' agents)...',
+    (agentNames[activeAgents[0]] || 'Agent') + ' 搜索新聞中...',
+    activeAgents.length > 1
+      ? (agentNames[activeAgents[1]] || 'Agent') + ' 並行執行中...'
+      : '分析資料中...',
+    '編輯部整合報告中...',
+    '生成最終報告...'
+  ];
+
+  var msgIdx = 0;
+  var statusInterval = setInterval(function() {
+    if (msgIdx < statusMessages.length) {
+      statusText.textContent = statusMessages[msgIdx];
+      agentTrace.textContent = 'AGENT_' + (msgIdx + 1) + '/' + (activeAgents.length + 2);
+      msgIdx++;
+    }
+  }, 2500);
+
+  try {
+    // First request — may return tool_use block(s) for web_search
+    var response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 4096,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        system: 'You are a news intelligence system. Always use web_search to find real, current news before generating the report. Output ONLY raw valid JSON with no markdown formatting, no ```json fences, and no text outside the JSON object.',
+        messages: [{ role: 'user', content: systemPrompt }]
+      })
+    });
+
+    if (!response.ok) {
+      var err = await response.json();
+      throw new Error(err.error && err.error.message ? err.error.message : 'API Error ' + response.status);
+    }
+
+    var data = await response.json();
+
+    // Agentic loop: keep sending tool results until stop_reason is 'end_turn'
+    var messages = [{ role: 'user', content: systemPrompt }];
+
+    while (data.stop_reason === 'tool_use') {
+      var assistantContent = data.content;
+      messages.push({ role: 'assistant', content: assistantContent });
+
+      // Build tool_result blocks for all tool_use blocks
+      var toolResults = [];
+      for (var i = 0; i < assistantContent.length; i++) {
+        var block = assistantContent[i];
+        if (block.type === 'tool_use') {
+          // web_search is server-side; return an empty acknowledgement so the loop can continue
+          toolResults.push({
+            type: 'tool_result',
+            tool_use_id: block.id,
+            content: ''
+          });
+        }
+      }
+
+      messages.push({ role: 'user', content: toolResults });
+
+      var contResp = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+          'anthropic-dangerous-direct-browser-access': 'true'
+        },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-6',
+          max_tokens: 4096,
+          tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+          system: 'You are a news intelligence system. Always use web_search to find real, current news before generating the report. Output ONLY raw valid JSON with no markdown formatting, no ```json fences, and no text outside the JSON object.',
+          messages: messages
+        })
+      });
+
+      if (!contResp.ok) {
+        var contErr = await contResp.json();
+        throw new Error(contErr.error && contErr.error.message ? contErr.error.message : 'API Error ' + contResp.status);
+      }
+
+      data = await contResp.json();
+    }
+
+    clearInterval(statusInterval);
+
+    // Extract text from final response
+    var rawText = '';
+    for (var j = 0; j < data.content.length; j++) {
+      if (data.content[j].type === 'text') rawText += data.content[j].text;
+    }
+
+    // Clean and parse JSON
+    rawText = rawText.replace(/```json|```/g, '').trim();
+    var jsonStart = rawText.indexOf('{');
+    var jsonEnd   = rawText.lastIndexOf('}');
+    if (jsonStart === -1 || jsonEnd === -1) throw new Error('No valid JSON found in response');
+    var report = JSON.parse(rawText.slice(jsonStart, jsonEnd + 1));
+
+    renderReport(report, lang);
+
+  } catch (err) {
+    clearInterval(statusInterval);
+    showError('Agent 執行失敗：' + err.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '&#x26A1; 執行 Agent Team';
+    statusBar.classList.remove('visible');
+  }
+}
+
+// ── Render ──
+function renderReport(report, lang) {
+  var reportArea  = document.getElementById('report-area');
+  var newsContent = document.getElementById('news-content');
+  var summaryBox  = document.getElementById('summary-box');
+
+  document.getElementById('report-meta').textContent =
+    '📅 ' + (report.generatedAt || new Date().toLocaleString('zh-HK')) + ' · AGENT TEAM REPORT';
+  document.getElementById('report-title').textContent = report.reportTitle || '每日新聞情報報告';
+
+  var html     = '';
+  var fullText = (report.reportTitle || '') + '\n\n';
+
+  var sections = report.sections || [];
+  for (var s = 0; s < sections.length; s++) {
+    var section = sections[s];
+    html += '<div class="section-label">' + escHtml(section.agentIcon || '📌') + ' ' + escHtml(section.sectionName) + '</div>';
+    html += '<div class="news-grid">';
+    fullText += '\n## ' + section.sectionName + '\n';
+
+    var items = section.items || [];
+    for (var k = 0; k < items.length; k++) {
+      var item        = items[k];
+      var tagClass    = 'tag-' + (item.tag || 'general');
+      var impactClass = item.impact === 'high' ? 'impact-high' : item.impact === 'medium' ? 'impact-med' : 'impact-low';
+      var impactLabel = item.impact === 'high'
+        ? (lang === 'zh' ? '高影響' : 'High Impact')
+        : item.impact === 'medium'
+        ? (lang === 'zh' ? '中影響' : 'Medium')
+        : (lang === 'zh' ? '低影響' : 'Low');
+
+      html +=
+        '<div class="news-card">' +
+          '<div class="card-top">' +
+            '<div class="card-title">' + escHtml(item.headline) + '</div>' +
+            '<span class="card-tag ' + tagClass + '">' + escHtml((item.tag || 'NEWS').toUpperCase()) + '</span>' +
+          '</div>' +
+          '<div class="card-summary">' + escHtml(item.summary) + '</div>' +
+          '<div class="card-footer">' +
+            '<span>📡 ' + escHtml(item.source || '—') + ' · ' + escHtml(item.timeAgo || '—') + '</span>' +
+            '<span class="impact-badge ' + impactClass + '"><span class="impact-dot"></span>' + impactLabel + '</span>' +
+          '</div>' +
+        '</div>';
+
+      fullText += '\n### ' + item.headline + '\n' + item.summary + '\n來源: ' + (item.source || '') + ' · ' + (item.timeAgo || '') + '\n';
+    }
+    html += '</div>';
+  }
+
+  newsContent.innerHTML = html;
+
+  if (report.editorSynthesis) {
+    document.getElementById('summary-text').textContent = report.editorSynthesis;
+    summaryBox.style.display = 'block';
+    fullText += '\n\n## 綸合分析\n' + report.editorSynthesis;
+  }
+
+  reportText = fullText;
+  reportArea.classList.add('visible');
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function showError(msg) {
+  var box = document.getElementById('error-box');
+  box.innerHTML = '⚠️ ' + msg;
+  box.classList.add('visible');
+  document.getElementById('empty-state').style.display = 'block';
+}
+
+function copyReport() {
+  if (!reportText) return;
+  navigator.clipboard.writeText(reportText).then(function() {
+    var btn = document.querySelector('.copy-btn');
+    btn.textContent = '✅ 已複製';
+    setTimeout(function() { btn.innerHTML = '📋 複製報告'; }, 2000);
+  });
+}
+</script>
+
+</body>
+</html>
