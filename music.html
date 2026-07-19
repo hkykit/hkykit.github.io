@@ -1,3 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🎵 Music Creator Studio</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+/* ================================================================
+   Music Creator Studio — ms-* component tokens & styles
+   Extends the site's existing design system (style.css).
+   ================================================================ */
+
+:root {
+  --ms-bg-start:          #e0f4ea;
+  --ms-bg-end:            var(--g50);
+  --ms-card:              #ffffff;
+  --ms-card-border:       var(--g300);
+  --ms-text-primary:      var(--text);
+  --ms-text-secondary:    var(--g700);
+  --ms-text-muted:        var(--g500);
+  --ms-step-future-bg:    #ffffff;
+  --ms-step-future-bd:    #ddd;
+  --ms-step-future-color: #aaa;
+  --ms-connector-idle:    #ddd;
+  --ms-output-bg:         var(--g50);
+  --ms-input-bg:          #ffffff;
+  --ms-progress-track:    #eee;
+  --ms-info-cell-bg:      var(--g50);
+  --ms-phase2-bg:         var(--yellow);
+  --ms-phase2-text:       #7a6000;
+  --ms-phase2-border:     #e8a400;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ms-bg-start:          #061510;
+    --ms-bg-end:            #0a1e16;
+    --ms-card:              #0f2619;
+    --ms-card-border:       #1b3d2b;
+    --ms-text-primary:      #d8f3dc;
+    --ms-text-secondary:    #74c69d;
+    --ms-text-muted:        #40916c;
+    --ms-step-future-bg:    #0a1e16;
+    --ms-step-future-bd:    #1b3d2b;
+    --ms-step-future-color: #325c45;
+    --ms-connector-idle:    #1b3d2b;
+    --ms-output-bg:         #061510;
+    --ms-input-bg:          #0a1e16;
+    --ms-progress-track:    #163022;
+    --ms-info-cell-bg:      #061510;
+    --ms-phase2-bg:         #2e2500;
+    --ms-phase2-text:       #f0d060;
+    --ms-phase2-border:     #c8880a;
+  }
+}
+
+:root[data-theme="dark"] {
+  --ms-bg-start:          #061510;
+  --ms-bg-end:            #0a1e16;
+  --ms-card:              #0f2619;
+  --ms-card-border:       #1b3d2b;
+  --ms-text-primary:      #d8f3dc;
+  --ms-text-secondary:    #74c69d;
+  --ms-text-muted:        #40916c;
+  --ms-step-future-bg:    #0a1e16;
+  --ms-step-future-bd:    #1b3d2b;
+  --ms-step-future-color: #325c45;
+  --ms-connector-idle:    #1b3d2b;
+  --ms-output-bg:         #061510;
+  --ms-input-bg:          #0a1e16;
+  --ms-progress-track:    #163022;
+  --ms-info-cell-bg:      #061510;
+  --ms-phase2-bg:         #2e2500;
+  --ms-phase2-text:       #f0d060;
+  --ms-phase2-border:     #c8880a;
+}
+
+:root[data-theme="light"] {
+  --ms-bg-start:          #e0f4ea;
+  --ms-bg-end:            var(--g50);
+  --ms-card:              #ffffff;
+  --ms-card-border:       var(--g300);
+  --ms-text-primary:      var(--text);
+  --ms-text-secondary:    var(--g700);
+  --ms-text-muted:        var(--g500);
+  --ms-step-future-bg:    #ffffff;
+  --ms-step-future-bd:    #ddd;
+  --ms-step-future-color: #aaa;
+  --ms-connector-idle:    #ddd;
+  --ms-output-bg:         var(--g50);
+  --ms-input-bg:          #ffffff;
+  --ms-progress-track:    #eee;
+  --ms-info-cell-bg:      var(--g50);
+  --ms-phase2-bg:         var(--yellow);
+  --ms-phase2-text:       #7a6000;
+  --ms-phase2-border:     #e8a400;
+}
+
+.ms-page {
+  min-height: 100vh;
+  background: linear-gradient(158deg, var(--ms-bg-start) 0%, var(--ms-bg-end) 100%);
+}
+
+.ms-hero {
+  position: relative;
+  text-align: center;
+  padding: 3rem 1rem 2rem;
+  overflow: hidden;
+}
+
+.ms-hero-floaties {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.ms-floaty {
+  position: absolute;
+  font-size: clamp(1.1rem, 2.2vw, 1.8rem);
+  opacity: 0.14;
+  animation: ms-float 8s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+.ms-floaty:nth-child(1) { top: 14%; left:  5%; animation-duration:  7.2s; animation-delay: 0s; }
+.ms-floaty:nth-child(2) { top: 22%; right: 7%; animation-duration:  9.0s; animation-delay: 1.1s; }
+.ms-floaty:nth-child(3) { top: 58%; left:  3%; animation-duration:  8.3s; animation-delay: 0.5s; }
+.ms-floaty:nth-child(4) { top: 74%; right: 5%; animation-duration: 10.1s; animation-delay: 2.0s; }
+.ms-floaty:nth-child(5) { top:  8%; left: 43%; animation-duration:  6.5s; animation-delay: 0.7s; }
+.ms-floaty:nth-child(6) { top: 44%; right:12%; animation-duration: 11.2s; animation-delay: 1.6s; }
+.ms-floaty:nth-child(7) { top: 80%; left: 22%; animation-duration:  8.7s; animation-delay: 0.2s; }
+.ms-floaty:nth-child(8) { top: 64%; right:27%; animation-duration:  7.6s; animation-delay: 2.4s; }
+
+@keyframes ms-float {
+  from { transform: translateY(0px)   rotate(-4deg); }
+  to   { transform: translateY(-22px) rotate( 4deg); }
+}
+
+.ms-hero-content { position: relative; z-index: 1; }
+
+.ms-title {
+  font-family: 'Pacifico', cursive;
+  font-size: clamp(2.2rem, 5vw, 3.6rem);
+  color: var(--g800);
+  text-shadow: 0 2px 16px rgba(183, 228, 199, 0.55);
+  margin: 0 0 .55rem;
+  line-height: 1.15;
+}
+
+.ms-subtitle {
+  font-size: 1rem;
+  color: var(--ms-text-secondary);
+  font-weight: 700;
+  letter-spacing: .03em;
+  margin: 0;
+}
+
+.ms-stepper-wrap { position: relative; }
+
+.ms-reset-wrap {
+  display: flex;
+  justify-content: center;
+  margin-top: -.25rem;
+  margin-bottom: .75rem;
+}
+
+.ms-stepper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 0;
+  margin: 2.5rem 0 1.5rem;
+  overflow-x: auto;
+  padding: 0 .5rem;
+  scrollbar-width: none;
+}
+.ms-stepper::-webkit-scrollbar { display: none; }
+
+.ms-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .5rem;
+  cursor: default;
+  user-select: none;
+  flex-shrink: 0;
+  min-width: 60px;
+}
+
+.ms-step.clickable { cursor: pointer; }
+.ms-step.clickable:hover .ms-step-circle { transform: scale(1.08); }
+
+.ms-step-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.ms-step-circle.active {
+  background: var(--g700);
+  color: #fff;
+  border-color: var(--g700);
+  box-shadow: 0 0 0 6px rgba(64, 145, 108, .2);
+  animation: pulse-step 2s ease-in-out infinite;
+}
+
+.ms-step-circle.completed {
+  background: var(--g800);
+  color: #fff;
+  border-color: var(--g800);
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+
+.ms-step-circle.future {
+  background: var(--ms-step-future-bg);
+  color: var(--ms-step-future-color);
+  border-color: var(--ms-step-future-bd);
+}
+
+.ms-step-label {
+  font-size: .78rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--ms-text-secondary);
+  white-space: nowrap;
+}
+
+.ms-step-connector {
+  flex: 1;
+  min-width: 14px;
+  max-width: 80px;
+  height: 3px;
+  margin-top: 24px;
+  background: var(--ms-connector-idle);
+  border-radius: 2px;
+  transition: background .35s ease;
+  flex-shrink: 1;
+}
+.ms-step-connector.done { background: var(--g700); }
+
+@keyframes pulse-step {
+  0%,  100% { box-shadow: 0 0 0   0 rgba(64, 145, 108, .40); }
+  50%        { box-shadow: 0 0 0 8px rgba(64, 145, 108,   0); }
+}
+
+.ms-panel-area { padding-bottom: 3rem; }
+
+.ms-panel {
+  background: var(--ms-card);
+  border-radius: var(--radius, 24px);
+  padding: 2.5rem 2rem;
+  margin: 1.5rem 0;
+  box-shadow: var(--shadow, 0 8px 32px rgba(45, 106, 79, .14));
+  border-top: 5px solid var(--g700);
+  box-sizing: border-box;
+}
+
+.ms-panel-header { margin-bottom: 2rem; }
+.ms-panel-title { font-size: 1.5rem; font-weight: 800; color: var(--ms-text-primary); margin: 0 0 .3rem; }
+.ms-panel-subtitle { font-size: .9rem; color: var(--ms-text-secondary); margin: 0; }
+
+.ms-form-group { margin-bottom: 1.2rem; }
+.ms-label { font-size: .88rem; font-weight: 800; color: var(--ms-text-primary); display: block; margin-bottom: .5rem; }
+
+.ms-input, .ms-textarea, .ms-select {
+  width: 100%;
+  padding: .75rem 1rem;
+  border-radius: var(--rsm, 14px);
+  border: 2px solid var(--ms-card-border);
+  font-family: 'Nunito', sans-serif;
+  font-size: .95rem;
+  color: var(--ms-text-primary);
+  background: var(--ms-input-bg);
+  outline: none;
+  transition: border-color .2s ease, box-shadow .2s ease;
+  box-sizing: border-box;
+}
+
+.ms-input:focus, .ms-textarea:focus, .ms-select:focus {
+  border-color: var(--g700);
+  box-shadow: 0 0 0 3px rgba(64, 145, 108, .12);
+}
+
+.ms-textarea { resize: vertical; min-height: 100px; }
+
+.ms-btn-primary, .ms-btn-secondary {
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: .85rem 2rem;
+  border-radius: 50px;
+  transition: background .22s ease, color .22s ease, transform .15s ease;
+  display: inline-block;
+  text-align: center;
+  box-sizing: border-box;
+  line-height: 1.2;
+}
+
+.ms-btn-primary { background: var(--g700); color: #fff; border: none; width: 100%; }
+.ms-btn-primary:hover { background: var(--g800); transform: translateY(-1px); }
+.ms-btn-primary:active { transform: translateY(0); }
+.ms-btn-secondary { background: var(--ms-card); color: var(--g700); border: 2px solid var(--g700); width: 100%; }
+.ms-btn-secondary:hover { background: var(--g700); color: #fff; }
+.ms-btn-sm { padding: .5rem 1.2rem; font-size: .85rem; width: auto; }
+
+.ms-output-card {
+  background: var(--ms-output-bg);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+  border: 1px solid var(--ms-card-border);
+}
+
+.ms-section-label {
+  font-size: .8rem; font-weight: 800; color: var(--ms-text-muted);
+  text-transform: uppercase; letter-spacing: .08em; margin: 0 0 .4rem;
+}
+
+.ms-lyrics-block { white-space: pre-line; line-height: 1.9; font-size: .95rem; color: var(--ms-text-primary); margin: 0; }
+
+.ms-badge { display: inline-block; padding: .3rem .8rem; border-radius: 50px; font-size: .8rem; font-weight: 700; margin: .2rem; }
+
+.ms-chord-badge {
+  display: inline-block;
+  background: var(--g100); color: var(--g800); border: 1px solid var(--ms-card-border);
+  padding: .3rem .9rem; border-radius: 8px;
+  font-family: 'Courier New', Courier, monospace; font-size: .95rem; margin: .2rem;
+}
+
+.ms-info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin: 1rem 0; }
+.ms-info-cell { background: var(--ms-info-cell-bg); border-radius: 12px; padding: 1rem; text-align: center; }
+.ms-info-cell .value { font-size: 1.4rem; font-weight: 800; color: var(--ms-text-primary); font-variant-numeric: tabular-nums; display: block; }
+.ms-info-cell .label { font-size: .78rem; color: var(--ms-text-secondary); margin-top: .2rem; display: block; }
+
+.ms-loading { text-align: center; padding: 2rem; font-size: 1.2rem; animation: ms-pulse 1s ease-in-out infinite; }
+
+@keyframes ms-pulse {
+  0%, 100% { opacity: 1;   transform: scale(1);    }
+  50%       { opacity: 0.4; transform: scale(0.88); }
+}
+
+.ms-phase2-notice {
+  background: var(--ms-phase2-bg); border-radius: 12px; padding: 1rem;
+  font-size: .88rem; color: var(--ms-phase2-text); border-left: 4px solid var(--ms-phase2-border); margin: 1rem 0;
+}
+
+.ms-progress-bar-wrap { background: var(--ms-progress-track); border-radius: 50px; height: 12px; overflow: hidden; }
+.ms-progress-bar { height: 100%; border-radius: 50px; background: linear-gradient(90deg, var(--g500), var(--g700)); transition: width .5s ease; }
+
+@media (max-width: 640px) {
+  .ms-stepper { gap: .4rem; justify-content: flex-start; padding: 0 1rem; }
+  .ms-step-label { display: none; }
+  .ms-step-connector { min-width: 10px; max-width: 32px; }
+  .ms-panel { padding: 1.5rem 1rem; }
+  .ms-hero { padding: 2.5rem 1rem 1.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ms-floaty, .ms-loading { animation: none; }
+  .ms-step-circle.active { animation: none; box-shadow: 0 0 0 6px rgba(64, 145, 108, .2); }
+}
+  </style>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
 // === AGENT 1 PANEL ===
 
 const Agent1Panel = ({ onComplete, initialData }) => {
@@ -1974,3 +2355,123 @@ ${chorus}
     </div>
   );
 };
+
+function PipelineStepper({ currentStep, onStepClick }) {
+  const steps = [
+    { n: 1, icon: '🎤', label: '作詞' },
+    { n: 2, icon: '🎼', label: '編曲' },
+    { n: 3, icon: '🔗', label: '整合' },
+    { n: 4, icon: '🎨', label: '封面' },
+    { n: 5, icon: '📺', label: '發佈' },
+  ];
+
+  return (
+    <div className="ms-stepper" role="list" aria-label="製作流程">
+      {steps.map((step, i) => {
+        const isCompleted = step.n < currentStep;
+        const isActive    = step.n === currentStep;
+        const isFuture    = step.n > currentStep;
+        const isClickable = !isFuture;
+        const circleClass = 'ms-step-circle ' + (isActive ? 'active' : isCompleted ? 'completed' : 'future');
+        const stepClass = 'ms-step' + (isClickable ? ' clickable' : '');
+        const connectorDone = step.n <= currentStep;
+        return (
+          <React.Fragment key={step.n}>
+            {i > 0 && (
+              <div className={'ms-step-connector' + (connectorDone ? ' done' : '')} aria-hidden="true" />
+            )}
+            <div
+              className={stepClass}
+              role="listitem"
+              onClick={() => isClickable && onStepClick(step.n)}
+              aria-current={isActive ? 'step' : undefined}
+              aria-label={'步驟 ' + step.n + ': ' + step.label + (isCompleted ? ' (已完成)' : isActive ? ' (進行中)' : ' (未開始)')}
+              tabIndex={isClickable ? 0 : undefined}
+              onKeyDown={(e) => { if (isClickable && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); onStepClick(step.n); } }}
+            >
+              <div className={circleClass} aria-hidden="true">
+                {isCompleted ? '✓' : step.icon}
+              </div>
+              <span className="ms-step-label">{step.label}</span>
+            </div>
+          </React.Fragment>
+        );
+      })}
+    </div>
+  );
+}
+
+function App() {
+  const [currentStep,   setCurrentStep]   = React.useState(1);
+  const [agent1Output,  setAgent1Output]  = React.useState(null);
+  const [agent2Output,  setAgent2Output]  = React.useState(null);
+  const [agent3Output,  setAgent3Output]  = React.useState(null);
+  const [agent4Output,  setAgent4Output]  = React.useState(null);
+
+  const handleAgent1Complete = (data) => { setAgent1Output(data); setCurrentStep(2); };
+  const handleAgent2Complete = (data) => { setAgent2Output(data); setCurrentStep(3); };
+  const handleAgent3Complete = (data) => { setAgent3Output(data); setCurrentStep(4); };
+  const handleAgent4Complete = (data) => { setAgent4Output(data); setCurrentStep(5); };
+
+  const handleReset = () => {
+    setCurrentStep(1);
+    setAgent1Output(null);
+    setAgent2Output(null);
+    setAgent3Output(null);
+    setAgent4Output(null);
+  };
+
+  const musicFloaties = ['♪', '♫', '🎵', '🎶', '🎸', '🎹', '🎤', '🥁'];
+
+  return (
+    <div className="ms-page">
+      <div className="ms-hero">
+        <div className="ms-hero-floaties" aria-hidden="true">
+          {musicFloaties.map((emoji, i) => (
+            <span key={i} className="ms-floaty">{emoji}</span>
+          ))}
+        </div>
+        <div className="ms-hero-content">
+          <h1 className="ms-title">🎵 Music Creator Studio</h1>
+          <p className="ms-subtitle">AI 五重奏作曲工作室 — 從靈感到發佈</p>
+        </div>
+      </div>
+
+      <div className="container">
+        <div className="ms-stepper-wrap">
+          <PipelineStepper currentStep={currentStep} onStepClick={setCurrentStep} />
+          {currentStep > 1 && (
+            <div className="ms-reset-wrap">
+              <button className="ms-btn-secondary ms-btn-sm" onClick={handleReset} type="button">
+                ↺ 重新開始
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className="ms-panel-area">
+          {currentStep === 1 && (
+            <Agent1Panel onComplete={handleAgent1Complete} />
+          )}
+          {currentStep === 2 && agent1Output && (
+            <Agent2Panel agent1Output={agent1Output} onComplete={handleAgent2Complete} />
+          )}
+          {currentStep === 3 && agent1Output && agent2Output && (
+            <Agent3Panel agent1Output={agent1Output} agent2Output={agent2Output} onComplete={handleAgent3Complete} />
+          )}
+          {currentStep === 4 && agent3Output && (
+            <Agent4Panel agent3Output={agent3Output} onComplete={handleAgent4Complete} />
+          )}
+          {currentStep === 5 && agent3Output && agent4Output && (
+            <Agent5Panel agent3Output={agent3Output} agent4Output={agent4Output} />
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
